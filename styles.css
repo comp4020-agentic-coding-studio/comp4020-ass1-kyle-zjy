@@ -1,16 +1,431 @@
-body {
-  margin: 0;
-  padding: 2rem;
-  font-family: system-ui, sans-serif;
-  line-height: 1.6;
-  color: #1a1a1a;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-main {
-  max-width: 40rem;
-  margin: 0 auto;
+:root {
+  --ink: #14231f;
+  --ink-muted: #3c5850;
+  --page-top: #f5faf8;
+  --page-bottom: #dcece6;
+  --scene-sky: #d7ece6;
+  --scene-sea: #2f8f86;
+  --scene-seabed: #0f5c58;
+  --land-opacity: 1;
+  --emphasis-base: 0.14;
+  --serif: georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  --sans:
+    system-ui, -apple-system, "Segoe UI", roboto, sans-serif;
+}
+
+body[data-zone="contiguous-zone"] {
+  --ink-muted: #2f545c;
+  --page-top: #eff7f8;
+  --page-bottom: #cfe6ea;
+  --scene-sky: #cfe6ec;
+  --scene-sea: #1f6f84;
+  --scene-seabed: #0b3f52;
+  --land-opacity: 0.75;
+}
+
+body[data-zone="eez"] {
+  --ink-muted: #2c4763;
+  --page-top: #e7eef6;
+  --page-bottom: #bccbdc;
+  --scene-sky: #a9c3da;
+  --scene-sea: #154a72;
+  --scene-seabed: #08213a;
+  --land-opacity: 0.45;
+}
+
+body[data-zone="high-seas"] {
+  --ink: #eef2fb;
+  --ink-muted: #b7c3dc;
+  --page-top: #111a2c;
+  --page-bottom: #050912;
+  --scene-sky: #0d1830;
+  --scene-sea: #0a1930;
+  --scene-seabed: #020814;
+  --land-opacity: 0.16;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--page-top), var(--page-bottom));
+  font-family: var(--sans);
+  transition:
+    background 700ms ease,
+    color 700ms ease;
 }
 
 a {
-  color: #0b5fff;
+  color: inherit;
+}
+
+.masthead {
+  padding: 1rem clamp(1rem, 4vw, 2.5rem) 0;
+}
+
+.masthead nav a {
+  color: var(--ink-muted);
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+
+.masthead nav a:hover,
+.masthead nav a:focus-visible {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.visually-hidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+}
+
+.hero {
+  max-width: 54rem;
+  padding: clamp(1.5rem, 6vw, 4rem) clamp(1rem, 6vw, 3rem) clamp(2rem, 5vw, 3rem);
+}
+
+.hero h1 {
+  margin: 0 0 0.6rem;
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 7vw, 5.5rem);
+  line-height: 1.02;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.hero-lede {
+  margin: 0 0 0.9rem;
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+}
+
+.hero-tagline {
+  margin: 0 0 1.4rem;
+  color: var(--ink-muted);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  line-height: 1.5;
+}
+
+.hero-cta {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.ocean {
+  padding: 0 0 clamp(1rem, 3vw, 2rem);
+}
+
+.ocean-scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1000 / 320;
+  overflow: hidden;
+}
+
+.ocean-backdrop {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ocean-backdrop .sky {
+  fill: var(--scene-sky);
+  transition: fill 700ms ease;
+}
+
+.ocean-backdrop .sea {
+  fill: var(--scene-sea);
+  transition: fill 700ms ease;
+}
+
+.ocean-backdrop .seabed {
+  fill: var(--scene-seabed);
+  transition: fill 700ms ease;
+}
+
+.ocean-backdrop .land {
+  opacity: var(--land-opacity);
+  fill: #4a3527;
+  transition: opacity 700ms ease;
+}
+
+.ocean-backdrop .land-shadow {
+  opacity: calc(var(--land-opacity) * 0.7);
+  fill: rgb(0 0 0 / 30%);
+  transition: opacity 700ms ease;
+}
+
+.boundary-track {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.boundary {
+  position: absolute;
+  top: 10%;
+  bottom: 10%;
+  left: var(--pos);
+  transform: translateX(-50%);
+}
+
+.boundary-line {
+  position: absolute;
+  inset-block: 0;
+  width: 1px;
+  opacity: calc(var(--emphasis-base) + (1 - var(--emphasis-base)) * var(--emphasis, 0));
+  background: rgb(255 255 255 / 70%);
+  transition: opacity 500ms ease;
+}
+
+.boundary-label {
+  position: absolute;
+  top: -1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: calc(var(--emphasis-base) + (1 - var(--emphasis-base)) * var(--emphasis, 0));
+  transition: opacity 500ms ease;
+  white-space: nowrap;
+  color: var(--ink);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.ship-control {
+  position: absolute;
+  top: 54%;
+  right: 0;
+  left: 0;
+  height: 3rem;
+  margin: 0;
+  appearance: none;
+  transform: translateY(-50%);
+  background: transparent;
+  cursor: grab;
+}
+
+.ship-control:active {
+  cursor: grabbing;
+}
+
+.ship-control:focus {
+  outline: none;
+}
+
+.ship-control::-webkit-slider-runnable-track {
+  height: 100%;
+  background: transparent;
+}
+
+.ship-control::-moz-range-track {
+  height: 100%;
+  background: transparent;
+}
+
+.ship-control::-webkit-slider-thumb {
+  width: 2.6rem;
+  height: 1.6rem;
+  appearance: none;
+  clip-path: polygon(10% 0%, 90% 0%, 100% 60%, 80% 100%, 20% 100%, 0% 60%);
+  border-radius: 0.2rem 0.2rem 0.6rem 0.6rem;
+  background: #f4efe6;
+  box-shadow:
+    0 0 0 2px rgb(10 20 30 / 35%),
+    0 6px 14px rgb(0 0 0 / 35%);
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+  cursor: grab;
+}
+
+.ship-control::-moz-range-thumb {
+  width: 2.6rem;
+  height: 1.6rem;
+  clip-path: polygon(10% 0%, 90% 0%, 100% 60%, 80% 100%, 20% 100%, 0% 60%);
+  border: none;
+  border-radius: 0.2rem 0.2rem 0.6rem 0.6rem;
+  background: #f4efe6;
+  box-shadow:
+    0 0 0 2px rgb(10 20 30 / 35%),
+    0 6px 14px rgb(0 0 0 / 35%);
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+  cursor: grab;
+}
+
+.ship-control:hover::-webkit-slider-thumb {
+  transform: scale(1.08);
+}
+
+.ship-control:hover::-moz-range-thumb {
+  transform: scale(1.08);
+}
+
+.ship-control:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 6px #1c6dd0,
+    0 6px 14px rgb(0 0 0 / 35%);
+}
+
+.ship-control:focus-visible::-moz-range-thumb {
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 6px #1c6dd0,
+    0 6px 14px rgb(0 0 0 / 35%);
+}
+
+.distance-readout {
+  margin: 0.75rem 0 0.25rem;
+  color: var(--ink-muted);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+
+.seabed-note {
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  color: var(--ink-muted);
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+.legal-state {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 6vw, 2rem) clamp(3rem, 6vw, 5rem);
+  text-align: center;
+}
+
+.zone-distance {
+  margin: 0 0 0.5rem;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+.legal-state h2 {
+  margin: 0 0 0.6rem;
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.zone-statement {
+  margin: 0 0 1rem;
+  font-family: var(--serif);
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  font-weight: 700;
+}
+
+.zone-body p {
+  max-width: 34rem;
+  margin: 0 auto 0.75rem;
+  color: var(--ink-muted);
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  line-height: 1.6;
+}
+
+.zone-body p:last-child {
+  margin-bottom: 0;
+}
+
+.overlap-diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+}
+
+.overlap-row {
+  position: relative;
+  height: 1.4rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(120 140 150 / 16%);
+}
+
+.overlap-fill {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  background: rgb(120 190 255 / 35%);
+}
+
+.overlap-row-contiguous .overlap-fill {
+  background: rgb(255 205 120 / 45%);
+}
+
+.overlap-caption {
+  position: absolute;
+  top: 50%;
+  left: 0.6rem;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.disclaimer {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+  opacity: 0.55;
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+@media (width <= 600px) {
+  .ocean-scene {
+    aspect-ratio: 4 / 3;
+    min-height: 260px;
+  }
+
+  .ship-control::-webkit-slider-thumb {
+    width: 3rem;
+    height: 2rem;
+  }
+
+  .ship-control::-moz-range-thumb {
+    width: 3rem;
+    height: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

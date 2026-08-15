@@ -3,20 +3,97 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>COMP4020 prototype</title>
+    <title>Who Owns the Ocean? — a simplified legal journey from the Australian coast</title>
+    <meta
+      name="description"
+      content="Move a ship away from Australia and watch the legal status of the ocean change: territorial sea, contiguous zone, exclusive economic zone, high seas."
+    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <header>
+    <header class="masthead">
       <nav aria-label="Primary">
-        <a href="./">Home</a>
+        <a href="./">Who Owns the Ocean?</a>
       </nav>
     </header>
+
+    <div id="zone-announcer" class="visually-hidden" role="status" aria-live="polite"></div>
+
     <main>
-      <h1>COMP4020 prototype</h1>
-      <p data-testid="intro">
-        Replace this with your prototype. This week's brief is on the course website;
-        <code>spec/README.md</code> explains how the checks in this repo relate to it.
+      <section class="hero">
+        <h1>Who owns the ocean?</h1>
+        <p class="hero-lede"><strong>Nobody, exactly.</strong></p>
+        <p class="hero-tagline">The ocean has no fences.<br />The law does.</p>
+        <p class="hero-cta">Move the ship away from Australia →</p>
+      </section>
+
+      <section class="ocean" aria-label="Ocean cross-section and ship control">
+        <div class="ocean-scene">
+          <svg
+            class="ocean-backdrop"
+            viewBox="0 0 1000 320"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <rect class="sky" x="0" y="0" width="1000" height="200" />
+            <path class="seabed" d="M0,320 L0,235 C160,255 420,300 1000,320 Z" />
+            <path class="sea" d="M0,320 L0,190 Q250,178 500,188 T1000,190 L1000,320 Z" />
+            <path class="land" d="M0,0 L92,0 L74,110 L46,146 L18,172 L0,192 Z" />
+            <path class="land-shadow" d="M0,192 L18,172 L46,146 L52,150 L22,178 L0,206 Z" />
+          </svg>
+
+          <div class="boundary-track" aria-hidden="true">
+            <div class="boundary" data-boundary="territorial-sea" data-nm="12" style="--pos: 4.8%">
+              <span class="boundary-line"></span>
+              <span class="boundary-label">12 NM</span>
+            </div>
+            <div class="boundary" data-boundary="contiguous-zone" data-nm="24" style="--pos: 9.6%">
+              <span class="boundary-line"></span>
+              <span class="boundary-label">24 NM</span>
+            </div>
+            <div class="boundary" data-boundary="eez" data-nm="200" style="--pos: 80%">
+              <span class="boundary-line"></span>
+              <span class="boundary-label">200 NM</span>
+            </div>
+          </div>
+
+          <input
+            type="range"
+            id="ship-distance"
+            class="ship-control"
+            min="0"
+            max="250"
+            step="1"
+            value="0"
+            aria-label="Distance of ship from Australian baseline, in nautical miles"
+          />
+        </div>
+
+        <p class="distance-readout"><span id="distance-value">0</span> NM FROM BASELINE</p>
+        <p class="seabed-note">The seabed can follow a different legal boundary.</p>
+      </section>
+
+      <section class="legal-state" aria-labelledby="zone-heading">
+        <p class="zone-distance"><span id="zone-distance-value">0</span> NM</p>
+        <h2 id="zone-heading">Territorial Sea</h2>
+        <p class="zone-statement" id="zone-statement">Australia has sovereignty here.</p>
+        <div class="zone-body" id="zone-body"></div>
+        <div class="overlap-diagram" id="overlap-diagram" hidden aria-hidden="true">
+          <div class="overlap-row overlap-row-eez">
+            <span class="overlap-fill" style="width: 100%"></span>
+            <span class="overlap-caption">EEZ</span>
+          </div>
+          <div class="overlap-row overlap-row-contiguous">
+            <span class="overlap-fill" style="width: 12%"></span>
+            <span class="overlap-caption">Contiguous control · 12–24 NM</span>
+          </div>
+        </div>
+      </section>
+
+      <p class="disclaimer">
+        This is a simplified legal explainer, not a navigational chart or representation of
+        Australia's actual maritime boundaries.
       </p>
     </main>
     <script type="module" src="./main.ts"></script>
