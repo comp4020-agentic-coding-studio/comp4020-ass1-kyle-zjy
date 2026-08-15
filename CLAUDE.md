@@ -211,3 +211,33 @@ navigation menu to "improve" it; the single mechanic is the point.
   fine on the zone you were staring at when you wrote it. Use the `--ink-muted`
   custom property (already tuned per zone) for de-emphasised text instead of
   `opacity`.
+
+## End-of-iteration workflow
+
+Every completed coding iteration in this repo ends in this state, not just
+"files edited":
+
+```
+changes implemented → checks green → committed → pushed → deployed → deployment URL reported
+```
+
+Concretely, before declaring a round of changes done:
+
+1. Run `pnpm check` (and `pnpm check:evidence` if `PROCESS.md`/`reflections/`
+   changed) and fix any failure the changes caused.
+2. Review `git status` so only intended changes are staged.
+3. Commit with a clear message describing the iteration.
+4. Push to the configured remote branch.
+5. Let GitHub Actions run (`check` then `deploy`) and check its status
+   (`gh run list`/`gh run watch`) rather than assuming it passed.
+6. Report, at the end of the response: what changed, check/test results, the
+   commit hash, the branch pushed, deployment status, and the deployed GitHub
+   Pages URL.
+
+Push and deployment are part of the definition of done, not an optional
+follow-up. Never force-push, rewrite history, or take other destructive git
+actions without explicit request. If push or deployment fails (auth,
+permissions, network, missing tooling), say so plainly with the exact error
+--- never claim a deploy succeeded without evidence (a green `deploy` run, not
+just a green push) --- and give the shortest action needed to finish it
+locally.
