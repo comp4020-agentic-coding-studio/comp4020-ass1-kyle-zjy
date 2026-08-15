@@ -147,24 +147,27 @@
         </div>
       </section>
 
-      <section class="legal-state" aria-labelledby="zone-heading">
-        <p class="zone-distance"><span id="zone-distance-value">0</span> NM</p>
-        <h2 id="zone-heading">Territorial Sea</h2>
-        <p class="zone-statement" id="zone-statement">Australia has sovereignty here.</p>
-        <div class="zone-body" id="zone-body"></div>
-        <div class="overlap-diagram" id="overlap-diagram" hidden aria-hidden="true">
-          <div class="overlap-row overlap-row-eez">
-            <span class="overlap-fill" style="width: 100%"></span>
-            <span class="overlap-caption">EEZ</span>
+      <div class="info-grid">
+        <section class="legal-state info-col" aria-labelledby="zone-heading">
+          <h3 class="section-heading">Current Legal State</h3>
+          <p class="zone-distance"><span id="zone-distance-value">0</span> NM</p>
+          <h2 id="zone-heading">Territorial Sea</h2>
+          <p class="zone-statement" id="zone-statement">Australia has sovereignty here.</p>
+          <div class="zone-body" id="zone-body"></div>
+          <div class="overlap-diagram" id="overlap-diagram" hidden aria-hidden="true">
+            <div class="overlap-row overlap-row-eez">
+              <span class="overlap-fill" style="width: 100%"></span>
+              <span class="overlap-caption">EEZ</span>
+            </div>
+            <div class="overlap-row overlap-row-contiguous">
+              <span class="overlap-fill" style="width: 12%"></span>
+              <span class="overlap-caption">Contiguous control · 12–24 NM</span>
+            </div>
           </div>
-          <div class="overlap-row overlap-row-contiguous">
-            <span class="overlap-fill" style="width: 12%"></span>
-            <span class="overlap-caption">Contiguous control · 12–24 NM</span>
-          </div>
-        </div>
+        </section>
 
-        <div class="authority-matrix-wrap">
-          <h3 class="section-heading">What changes here?</h3>
+        <section class="authority-matrix-wrap info-col" aria-label="What changes here">
+          <h3 class="section-heading">What Changes Here?</h3>
           <dl class="authority-matrix" id="authority-matrix">
             <div class="matrix-row" data-row="sovereignty">
               <dt>Sovereignty</dt>
@@ -209,32 +212,33 @@
               </dd>
             </div>
           </dl>
-        </div>
-      </section>
+        </section>
 
-      <section class="activity-select" aria-label="Ship activity">
-        <fieldset class="activity-group">
-          <legend class="section-heading">What is your ship doing?</legend>
-          <label class="activity-option" data-activity="navigate">
-            <input type="radio" name="activity" value="navigate" checked />
-            <span>Navigate</span>
-          </label>
-          <label class="activity-option" data-activity="fish">
-            <input type="radio" name="activity" value="fish" />
-            <span>Fish</span>
-          </label>
-          <label class="activity-option" data-activity="research">
-            <input type="radio" name="activity" value="research" />
-            <span>Research</span>
-          </label>
-          <label class="activity-option" data-activity="seabed">
-            <input type="radio" name="activity" value="seabed" />
-            <span>Seabed</span>
-          </label>
-        </fieldset>
-        <p class="activity-question" id="activity-question"></p>
-        <p class="activity-answer" id="activity-answer" aria-live="polite"></p>
-      </section>
+        <section class="activity-select info-col" aria-label="Ship activity">
+          <h3 class="section-heading">What Is Your Ship Doing?</h3>
+          <fieldset class="activity-group">
+            <legend class="visually-hidden">What is your ship doing?</legend>
+            <label class="activity-option" data-activity="navigate">
+              <input type="radio" name="activity" value="navigate" checked />
+              <span>Navigate</span>
+            </label>
+            <label class="activity-option" data-activity="fish">
+              <input type="radio" name="activity" value="fish" />
+              <span>Fish</span>
+            </label>
+            <label class="activity-option" data-activity="research">
+              <input type="radio" name="activity" value="research" />
+              <span>Research</span>
+            </label>
+            <label class="activity-option" data-activity="seabed">
+              <input type="radio" name="activity" value="seabed" />
+              <span>Seabed</span>
+            </label>
+          </fieldset>
+          <p class="activity-question" id="activity-question"></p>
+          <p class="activity-answer" id="activity-answer" aria-live="polite"></p>
+        </section>
+      </div>
 
       <section class="captains-log" aria-label="Captain's log">
         <h2 class="section-heading">Captain's log</h2>

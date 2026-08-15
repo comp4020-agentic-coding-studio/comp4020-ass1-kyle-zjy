@@ -157,6 +157,21 @@ a {
   --ship-thumb-w: 2.75rem;
 }
 
+/* Desktop-only: cap the scene's own box height so the ocean occupies
+   roughly half the viewport, leaving the info grid visible below it once
+   the scene is pinned via .ocean-sticky. All ship/boundary/xray positioning
+   inside the scene is percentage-based, so this cannot affect drag math —
+   it only changes the box the percentages resolve against. Gated to widths
+   above the existing mobile breakpoint so phone sizing is untouched. */
+@media (width >= 601px) {
+  .ocean-scene {
+    width: auto;
+    height: 48vh;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
 .ocean-backdrop {
   position: absolute;
   inset: 0;
@@ -627,7 +642,7 @@ body[data-zone="high-seas"] .ship-mast {
 .ocean-meta {
   max-width: 40rem;
   margin: 0.5rem auto 0;
-  padding: 1rem 1rem 0;
+  padding: 0.75rem 1rem 0;
   border-top: 1px solid rgb(120 140 150 / 18%);
 }
 
@@ -765,11 +780,29 @@ body[data-zone="high-seas"] .ship-mast {
   outline-offset: 2px;
 }
 
-.legal-state {
-  max-width: 40rem;
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  max-width: 76rem;
   margin: 0 auto;
-  padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 6vw, 2rem) clamp(3rem, 6vw, 5rem);
-  text-align: center;
+  padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1rem, 4vw, 2rem) 0;
+  align-items: start;
+  text-align: left;
+}
+
+.info-col {
+  padding-left: clamp(1.5rem, 3vw, 2.5rem);
+  border-left: 1px solid rgb(120 140 150 / 18%);
+}
+
+.info-col:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.legal-state {
+  padding-bottom: clamp(1rem, 2vw, 1.5rem);
 }
 
 .zone-distance {
@@ -783,24 +816,23 @@ body[data-zone="high-seas"] .ship-mast {
 .legal-state h2 {
   margin: 0 0 0.6rem;
   font-family: var(--serif);
-  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  font-size: clamp(1.8rem, 2.4vw, 2.1rem);
   line-height: 1.05;
   text-transform: uppercase;
 }
 
 .zone-statement {
-  margin: 0 0 1rem;
+  margin: 0 0 0.75rem;
   font-family: var(--serif);
-  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  font-size: clamp(1.2rem, 1.4vw, 1.3rem);
   font-weight: 700;
 }
 
 .zone-body p {
-  max-width: 34rem;
-  margin: 0 auto 0.75rem;
+  margin: 0 0 0.6rem;
   color: var(--ink-muted);
-  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
-  line-height: 1.6;
+  font-size: clamp(0.95rem, 1.1vw, 1rem);
+  line-height: 1.55;
 }
 
 .zone-body p:last-child {
@@ -811,7 +843,7 @@ body[data-zone="high-seas"] .ship-mast {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   font-size: 0.75rem;
 }
 
@@ -844,9 +876,7 @@ body[data-zone="high-seas"] .ship-mast {
 }
 
 .authority-matrix-wrap {
-  margin-top: 1.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgb(120 140 150 / 25%);
+  padding-bottom: clamp(1rem, 2vw, 1.5rem);
 }
 
 .section-heading {
@@ -907,27 +937,17 @@ body[data-zone="high-seas"] .ship-mast {
 }
 
 .activity-select {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 0 clamp(1rem, 6vw, 2rem) clamp(2rem, 5vw, 3rem);
-  text-align: center;
+  padding-bottom: clamp(1rem, 2vw, 1.5rem);
 }
 
 .activity-group {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.5rem;
   margin: 0 0 1rem;
   padding: 0;
   border: none;
-}
-
-.activity-group legend {
-  width: 100%;
-  margin-bottom: 0.75rem;
-  padding: 0;
-  text-align: center;
 }
 
 .activity-option {
@@ -970,34 +990,48 @@ body[data-zone="high-seas"] .ship-mast {
 }
 
 .activity-answer {
-  max-width: 34rem;
-  margin: 0 auto;
   color: var(--ink-muted);
   font-size: 0.95rem;
   line-height: 1.6;
 }
 
 .captains-log {
-  max-width: 34rem;
+  max-width: 76rem;
   margin: 0 auto;
-  padding: 0 clamp(1rem, 6vw, 2rem) clamp(2rem, 5vw, 3rem);
+  padding: clamp(1rem, 2vw, 1.5rem) clamp(1rem, 4vw, 2rem) clamp(1.5rem, 3vw, 2rem);
+  border-top: 1px solid rgb(120 140 150 / 18%);
 }
 
 .log-list {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  justify-content: space-between;
+  gap: 1.5rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+.log-list::before {
+  position: absolute;
+  top: 0.27rem;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: rgb(120 140 150 / 25%);
+  content: "";
+}
+
 .log-entry {
+  position: relative;
+  z-index: 1;
   display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
   color: var(--ink-muted);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   transition: color 400ms ease;
 }
 
@@ -1025,7 +1059,7 @@ body[data-zone="high-seas"] .ship-mast {
 .disclaimer {
   max-width: 34rem;
   margin: 0 auto;
-  padding: 0 1rem 3rem;
+  padding: 0 1rem 1.25rem;
   color: var(--ink-muted);
   text-align: center;
   font-size: 0.75rem;
@@ -1116,6 +1150,40 @@ body.climax-active .captains-log {
 
   .hero {
     padding-bottom: 1.25rem;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .info-col {
+    padding-top: 1.25rem;
+    padding-left: 0;
+    border-top: 1px solid rgb(120 140 150 / 18%);
+    border-left: none;
+  }
+
+  .info-col:first-child {
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .log-list {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .log-list::before {
+    display: none;
+  }
+
+  .log-entry {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.6rem;
   }
 }
 
