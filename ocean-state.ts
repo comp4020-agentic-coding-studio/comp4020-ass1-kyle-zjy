@@ -51,11 +51,16 @@ export function getProgressFraction(distanceNm: number): number {
 // as distinct moments instead of being crushed into the first 10% of a linear
 // track. distance/getZoneId/every legal derivation still only ever uses the
 // real NM number — this remaps the same number for placement only.
+//
+// The range is padded to [0.06, 0.96] rather than [0, 1] so the ship marker
+// (centred on its own position via a translate(-50%) transform) is never
+// clipped by the scene's overflow:hidden at either extreme — at fraction 0 or
+// 1 the marker would sit exactly on the edge with half of it cut off.
 const VISUAL_SEGMENTS: Array<[fromNm: number, toNm: number, fromFrac: number, toFrac: number]> = [
-  [0, BOUNDARIES.territorialSea, 0, 0.2],
-  [BOUNDARIES.territorialSea, BOUNDARIES.contiguousZone, 0.2, 0.35],
-  [BOUNDARIES.contiguousZone, BOUNDARIES.eez, 0.35, 0.8],
-  [BOUNDARIES.eez, MAX_NM, 0.8, 1],
+  [0, BOUNDARIES.territorialSea, 0.06, 0.3],
+  [BOUNDARIES.territorialSea, BOUNDARIES.contiguousZone, 0.3, 0.52],
+  [BOUNDARIES.contiguousZone, BOUNDARIES.eez, 0.52, 0.88],
+  [BOUNDARIES.eez, MAX_NM, 0.88, 0.96],
 ];
 
 export function getVisualPosition(distanceNm: number): number {
@@ -67,7 +72,25 @@ export function getVisualPosition(distanceNm: number): number {
       return fromFrac + t * (toFrac - fromFrac);
     }
   }
-  return 1;
+  return 0.96;
+}
+
+// The exact inverse of getVisualPosition. The native <input type="range">'s
+// own value domain is this screen fraction (see main.ts's handleDistanceInput
+// and the CSS-inset .ship-control), not the NM distance — that's what makes
+// the browser's own linear thumb-in-track math land pixel-for-pixel on the
+// non-linear ship marker. NM stays a pure, deterministic function of a plain
+// number throughout; only which number moved downstream.
+export function getDistanceFromVisualFraction(fraction: number): number {
+  const f = Math.min(0.96, Math.max(0.06, fraction));
+  for (const [fromNm, toNm, fromFrac, toFrac] of VISUAL_SEGMENTS) {
+    if (f <= toFrac) {
+      const span = toFrac - fromFrac;
+      const t = span === 0 ? 0 : (f - fromFrac) / span;
+      return fromNm + t * (toNm - fromNm);
+    }
+  }
+  return MAX_NM;
 }
 
 // Boundaries newly crossed travelling outward from fromNm to toNm. Moving

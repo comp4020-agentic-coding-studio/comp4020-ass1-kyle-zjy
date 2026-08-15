@@ -2,9 +2,9 @@ import {
   type ActivityId,
   type BoundaryNm,
   CROSSING_BOUNDARIES,
-  clampDistance,
   getApproachingBoundary,
   getBoundariesCrossedOutbound,
+  getDistanceFromVisualFraction,
   getVisualPosition,
   getZoneId,
   type ZoneId,
@@ -79,9 +79,11 @@ export function mount(doc: Document): void {
     text: doc.querySelector<HTMLElement>(`#log-text-${nm}`),
   }));
 
+  const initialDistance = getDistanceFromVisualFraction(Number(slider.value) / 100);
+
   const state: AppState = {
-    distance: clampDistance(Number(slider.value)),
-    zone: getZoneId(Number(slider.value)),
+    distance: initialDistance,
+    zone: getZoneId(initialDistance),
     activity: "navigate",
     legalXray: false,
     crossedBoundaries: new Set<BoundaryNm>(),
@@ -272,9 +274,9 @@ export function mount(doc: Document): void {
   // EVENT HANDLERS
   // ---------------------------------------------------------------------------
 
-  function handleDistanceInput(rawValue: number): void {
+  function handleDistanceInput(rawScreenPercent: number): void {
     const prevDistance = state.distance;
-    const nextDistance = clampDistance(rawValue);
+    const nextDistance = getDistanceFromVisualFraction(rawScreenPercent / 100);
     const newlyCrossed = getBoundariesCrossedOutbound(prevDistance, nextDistance).filter(
       (nm) => !state.crossedBoundaries.has(nm),
     );

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ACTIVITY_ANSWERS, AUTHORITY_MATRIX, XRAY_ZONE_LAYERS } from "../ocean-journey-content";
-import { getVisualPosition } from "../ocean-state";
+import { getDistanceFromVisualFraction, getVisualPosition } from "../ocean-state";
 
 // Same real-markup + real-controller mount pattern as spec/ocean-app.test.ts,
 // but re-mounted fresh per test (rather than once in beforeAll) since these
@@ -27,7 +27,7 @@ function slider(): HTMLInputElement {
 
 function setDistance(nm: number): void {
   const input = slider();
-  input.value = String(nm);
+  input.value = String(getVisualPosition(nm) * 100);
   input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
@@ -152,11 +152,11 @@ describe("aria-valuetext", () => {
 
 describe("non-linear visual scale", () => {
   it("matches the piecewise spec at every segment boundary", () => {
-    expect(getVisualPosition(0)).toBeCloseTo(0);
-    expect(getVisualPosition(12)).toBeCloseTo(0.2);
-    expect(getVisualPosition(24)).toBeCloseTo(0.35);
-    expect(getVisualPosition(200)).toBeCloseTo(0.8);
-    expect(getVisualPosition(250)).toBeCloseTo(1);
+    expect(getVisualPosition(0)).toBeCloseTo(0.06);
+    expect(getVisualPosition(12)).toBeCloseTo(0.3);
+    expect(getVisualPosition(24)).toBeCloseTo(0.52);
+    expect(getVisualPosition(200)).toBeCloseTo(0.88);
+    expect(getVisualPosition(250)).toBeCloseTo(0.96);
   });
 
   it("is monotonic non-decreasing across the whole range", () => {
@@ -166,6 +166,22 @@ describe("non-linear visual scale", () => {
       expect(fraction).toBeGreaterThanOrEqual(previous);
       previous = fraction;
     }
+  });
+});
+
+describe("visual fraction inverse", () => {
+  it("round-trips getVisualPosition at each segment boundary", () => {
+    for (const nm of [0, 12, 24, 200, 250]) {
+      const fraction = getVisualPosition(nm);
+      expect(getDistanceFromVisualFraction(fraction)).toBeCloseTo(nm);
+    }
+  });
+
+  it("clamps fractions outside the padded [0.06, 0.96] range", () => {
+    expect(getDistanceFromVisualFraction(0)).toBeCloseTo(0);
+    expect(getDistanceFromVisualFraction(0.03)).toBeCloseTo(0);
+    expect(getDistanceFromVisualFraction(1)).toBeCloseTo(250);
+    expect(getDistanceFromVisualFraction(0.99)).toBeCloseTo(250);
   });
 });
 

@@ -2,6 +2,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
+import { getVisualPosition } from "../ocean-state";
 
 // Loads the real index.html markup into jsdom's document, then mounts the
 // real main.ts controller against it — no re-implementation of the markup,
@@ -20,7 +21,7 @@ function slider(): HTMLInputElement {
 
 function setDistance(nm: number): void {
   const input = slider();
-  input.value = String(nm);
+  input.value = String(getVisualPosition(nm) * 100);
   input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
@@ -41,7 +42,7 @@ describe("initial render", () => {
   });
 
   it("starts in the Territorial Sea at 0 NM", () => {
-    expect(slider().value).toBe("0");
+    expect(document.querySelector("#distance-value")!.textContent).toBe("0");
     expect(heading()).toMatch(/territorial sea/i);
   });
 });
@@ -94,7 +95,7 @@ it("keeps the ship's logical distance and zone across a viewport resize", () => 
 
   window.dispatchEvent(new Event("resize"));
 
-  expect(slider().value).toBe("150");
+  expect(document.querySelector("#distance-value")!.textContent).toBe("150");
   expect(heading()).toMatch(/exclusive economic zone/i);
   expect(document.querySelector("#zone-heading")!.textContent!.trim().length).toBeGreaterThan(0);
 });

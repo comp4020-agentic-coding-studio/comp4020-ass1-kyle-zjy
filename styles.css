@@ -433,8 +433,8 @@ body[data-xray="on"] .xray-layers {
 .ship-control {
   position: absolute;
   top: 54%;
-  right: 0;
-  left: 0;
+  right: 4%;
+  left: 6%;
   height: 3rem;
   margin: 0;
   appearance: none;
@@ -462,8 +462,8 @@ body[data-xray="on"] .xray-layers {
 }
 
 .ship-control::-webkit-slider-thumb {
-  width: 2.6rem;
-  height: 1.6rem;
+  width: 2.75rem;
+  height: 1.9rem;
   appearance: none;
   opacity: 0;
   background: #f4efe6;
@@ -471,8 +471,8 @@ body[data-xray="on"] .xray-layers {
 }
 
 .ship-control::-moz-range-thumb {
-  width: 2.6rem;
-  height: 1.6rem;
+  width: 2.75rem;
+  height: 1.9rem;
   border: none;
   opacity: 0;
   background: #f4efe6;
@@ -482,10 +482,10 @@ body[data-xray="on"] .xray-layers {
 .ship-marker {
   position: absolute;
   top: 54%;
-  left: var(--ship-pos, 0%);
+  left: var(--ship-pos, 6%);
   z-index: 2;
-  width: 2.6rem;
-  height: 1.6rem;
+  width: 2.75rem;
+  height: 1.9rem;
   pointer-events: none;
   transform: translate(-50%, -50%);
   transition: left 60ms linear;
@@ -538,13 +538,16 @@ body[data-xray="on"] .xray-layers {
   transform: translateY(-50%);
 }
 
-.ship-hull {
+.ship-graphic {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.ship-hull {
   fill: #f4efe6;
-  filter: drop-shadow(0 4px 6px rgb(0 0 0 / 35%));
+  filter: drop-shadow(0 3px 4px rgb(0 0 0 / 35%));
   transition: fill 700ms ease;
 }
 
@@ -552,44 +555,55 @@ body[data-zone="high-seas"] .ship-hull {
   fill: #dbe6ff;
 }
 
-.ship-activity-icon {
-  position: absolute;
-  top: -0.5rem;
-  left: 50%;
-  width: 0.75rem;
-  height: 0.75rem;
-  transform: translateX(-50%);
+.ship-cabin {
+  fill: rgb(20 35 30 / 18%);
+  transition: fill 700ms ease;
 }
 
-.ship-activity-icon circle {
+body[data-zone="high-seas"] .ship-cabin {
+  fill: rgb(255 255 255 / 22%);
+}
+
+.ship-mast {
+  fill: #e7dcc7;
+  transition: fill 700ms ease;
+}
+
+body[data-zone="high-seas"] .ship-mast {
+  fill: #c3d3ea;
+}
+
+.ship-flag {
   fill: rgb(255 255 255 / 85%);
   transition: fill 300ms ease;
 }
 
-.ship-marker[data-activity="fish"] .ship-activity-icon circle {
+.ship-marker[data-activity="fish"] .ship-flag {
   fill: #ffd27f;
 }
 
-.ship-marker[data-activity="research"] .ship-activity-icon circle {
+.ship-marker[data-activity="research"] .ship-flag {
   fill: #8fd3ff;
 }
 
-.ship-marker[data-activity="seabed"] .ship-activity-icon circle {
+.ship-marker[data-activity="seabed"] .ship-flag {
   fill: #b98cff;
 }
 
 .distance-readout {
-  margin: 0.75rem 0 0.25rem;
+  margin: 0.9rem 0 0.2rem;
   color: var(--ink-muted);
   text-align: center;
   font-variant-numeric: tabular-nums;
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .approach-hint {
   height: 1rem;
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.2rem;
   color: var(--ink-muted);
   text-align: center;
   font-size: 0.7rem;
@@ -597,16 +611,21 @@ body[data-zone="high-seas"] .ship-hull {
   letter-spacing: 0.04em;
 }
 
+.ocean-meta {
+  max-width: 40rem;
+  margin: 0.5rem auto 0;
+  padding: 1rem 1rem 0;
+  border-top: 1px solid rgb(120 140 150 / 18%);
+}
+
 .progress-ruler {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  max-width: 40rem;
-  margin: 0.5rem auto 0;
-  padding: 0 1rem;
+  margin: 0 0 1rem;
   color: var(--ink-muted);
   font-size: 0.65rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -634,16 +653,18 @@ body[data-zone="high-seas"] .ship-hull {
 
 .ruler-tick-label {
   position: absolute;
-  top: 0.6rem;
+  top: 0.7rem;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.6rem;
+  color: var(--ink);
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
 }
 
 .ruler-marker {
   position: absolute;
   top: 50%;
-  left: var(--ship-pos, 0%);
+  left: var(--ship-pos, 6%);
   width: 8px;
   height: 8px;
   background: var(--ink);
@@ -654,16 +675,19 @@ body[data-zone="high-seas"] .ship-hull {
 
 .seabed-note,
 .scale-note {
-  max-width: 30rem;
+  max-width: 26rem;
   margin: 0 auto;
-  padding: 0 1rem;
   color: var(--ink-muted);
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+}
+
+.seabed-note {
+  margin-bottom: 0.35rem;
 }
 
 .scale-note {
-  margin-top: 0.25rem;
   font-style: italic;
 }
 
@@ -671,7 +695,7 @@ body[data-zone="high-seas"] .ship-hull {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  z-index: 3;
+  z-index: 6;
 }
 
 .xray-label {
@@ -1013,22 +1037,42 @@ body.climax-active .captains-log {
   }
 
   .ship-control::-webkit-slider-thumb {
-    width: 3rem;
-    height: 2rem;
+    width: 3.1rem;
+    height: 2.15rem;
   }
 
   .ship-control::-moz-range-thumb {
-    width: 3rem;
-    height: 2rem;
+    width: 3.1rem;
+    height: 2.15rem;
   }
 
   .ship-marker {
-    width: 3rem;
-    height: 2rem;
+    width: 3.1rem;
+    height: 2.15rem;
   }
 
   .xray-layer {
     font-size: 0.55rem;
+  }
+
+  .xray-label {
+    gap: 0.3rem;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.65rem;
+  }
+
+  .xray-switch {
+    width: 2rem;
+    height: 1.1rem;
+  }
+
+  .xray-switch::before {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
+  .xray-label input:checked + .xray-switch::before {
+    transform: translateX(0.9rem);
   }
 
   .toast-card {

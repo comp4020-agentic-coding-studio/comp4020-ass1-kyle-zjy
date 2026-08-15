@@ -70,15 +70,15 @@
           </div>
 
           <div class="boundary-track" aria-hidden="true">
-            <div class="boundary" data-boundary="territorial-sea" data-nm="12" style="--pos: 20%">
+            <div class="boundary" data-boundary="territorial-sea" data-nm="12" style="--pos: 30%">
               <span class="boundary-line"></span>
               <span class="boundary-label">12 NM</span>
             </div>
-            <div class="boundary" data-boundary="contiguous-zone" data-nm="24" style="--pos: 35%">
+            <div class="boundary" data-boundary="contiguous-zone" data-nm="24" style="--pos: 52%">
               <span class="boundary-line"></span>
               <span class="boundary-label">24 NM</span>
             </div>
-            <div class="boundary" data-boundary="eez" data-nm="200" style="--pos: 80%">
+            <div class="boundary" data-boundary="eez" data-nm="200" style="--pos: 88%">
               <span class="boundary-line"></span>
               <span class="boundary-label">200 NM</span>
             </div>
@@ -87,11 +87,14 @@
           <div class="ship-marker" id="ship-marker" aria-hidden="true">
             <span class="ship-seabed-line"></span>
             <span class="ship-wake"></span>
-            <svg class="ship-hull" viewBox="0 0 44 26" aria-hidden="true" focusable="false">
-              <path d="M4,15 L9,6 L35,6 L40,15 L33,21 L11,21 Z" />
-            </svg>
-            <svg class="ship-activity-icon" id="ship-activity-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <circle cx="12" cy="12" r="5" />
+            <svg class="ship-graphic" viewBox="0 0 64 44" aria-hidden="true" focusable="false">
+              <path
+                class="ship-hull"
+                d="M8,26 Q8,20 12,20 L38,20 Q44,20 50,24 L60,29 Q62,30 59,31.5 L42,37 Q30,39.5 14,38 Q8,37 8,32 Z"
+              />
+              <rect class="ship-cabin" x="20" y="13" width="14" height="9" rx="2" />
+              <rect class="ship-mast" x="26.4" y="4" width="1.2" height="9" rx="0.6" />
+              <path class="ship-flag" id="ship-activity-icon" d="M27.6,4 L37,7 L27.6,10 Z" />
             </svg>
           </div>
 
@@ -115,10 +118,10 @@
             type="range"
             id="ship-distance"
             class="ship-control"
-            min="0"
-            max="250"
+            min="6"
+            max="96"
             step="1"
-            value="0"
+            value="6"
             aria-label="Distance of ship from Australian baseline, in nautical miles"
           />
         </div>
@@ -127,19 +130,21 @@
         <p class="approach-hint" id="approach-hint" aria-hidden="true"></p>
        </div>
 
-        <div class="progress-ruler" aria-hidden="true">
-          <span class="ruler-label">Australia</span>
-          <span class="ruler-track">
-            <span class="ruler-tick" style="--tick-pos: 20%"><span class="ruler-tick-label">12</span></span>
-            <span class="ruler-tick" style="--tick-pos: 35%"><span class="ruler-tick-label">24</span></span>
-            <span class="ruler-tick" style="--tick-pos: 80%"><span class="ruler-tick-label">200</span></span>
-            <span class="ruler-marker" id="ruler-marker"></span>
-          </span>
-          <span class="ruler-label">Open ocean</span>
-        </div>
+        <div class="ocean-meta">
+          <div class="progress-ruler" aria-hidden="true">
+            <span class="ruler-label">Australia</span>
+            <span class="ruler-track">
+              <span class="ruler-tick" style="--tick-pos: 30%"><span class="ruler-tick-label">12</span></span>
+              <span class="ruler-tick" style="--tick-pos: 52%"><span class="ruler-tick-label">24</span></span>
+              <span class="ruler-tick" style="--tick-pos: 88%"><span class="ruler-tick-label">200</span></span>
+              <span class="ruler-marker" id="ruler-marker"></span>
+            </span>
+            <span class="ruler-label">Open ocean</span>
+          </div>
 
-        <p class="seabed-note">The seabed can follow a different legal boundary.</p>
-        <p class="scale-note">Simplified cross-section — not to scale.</p>
+          <p class="seabed-note">The seabed can follow a different legal boundary.</p>
+          <p class="scale-note">Simplified cross-section — not to scale.</p>
+        </div>
       </section>
 
       <section class="legal-state" aria-labelledby="zone-heading">
