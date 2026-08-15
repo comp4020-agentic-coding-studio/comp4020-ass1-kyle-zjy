@@ -164,20 +164,18 @@ says about the developer you're becoming.
 
 ## This project: "Who Owns the Ocean?"
 
-One page, one mechanic: a native `<input type="range">` moves a ship away from
-the Australian coast; the legal status of the water changes as it crosses
-invisible boundaries at 12, 24 and 200 nautical miles (territorial sea →
-contiguous zone → EEZ → high seas). The risks below are specific to *this*
-prototype, not generic advice --- don't add a second interaction, a map, or a
-navigation menu to "improve" it; the single mechanic is the point.
+One page, one primary mechanic: moving the ship changes the legal state. Secondary 
+controls such as Activity and Legal X-Ray may reveal different interpretations of 
+that same location, but they must not become separate standalone experiences.
 
 - **The distance in nautical miles is the only source of truth.** `getZoneId`
-  in `ocean-state.ts` decides the zone from a plain number. Never derive the
-  zone, the ship's position, or a boundary marker's emphasis from a DOM
-  rectangle, a pixel offset, or `window.innerWidth`. That's what lets the state
-  survive a viewport resize mid-interaction without resetting --- there's
-  nothing pixel-based to go stale. If you ever need the ship to react to
-  layout, resize the *scene*, not the *distance*.
+  in `ocean-state.ts` decides the zone from a plain number. Logical distance in
+  nautical miles is the source of truth for legal state. Visual position may use
+  a non-linear explanatory mapping, but legal state must always be derived from 
+  the resulting NM value, never directly from DOM geometry or pixel position., 
+  or `window.innerWidth`. That's what lets the state survive a viewport resize 
+  mid-interaction without resetting --- there's nothing pixel-based to go stale. 
+  If you ever need the ship to react to layout, resize the *scene*, not the *distance*.
 - **Sovereignty and sovereign rights are not interchangeable.** Australia has
   full sovereignty in the territorial sea (0--12 NM); in the EEZ it only has
   sovereign rights over resources plus limited jurisdiction. Never write
@@ -194,10 +192,10 @@ navigation menu to "improve" it; the single mechanic is the point.
   adding a paragraph next to it that undercuts it.
 - **The continental shelf is not a fifth zone.** It's a seabed/subsoil regime
   that can extend past the EEZ's water-column boundary and doesn't share the
-  same limits. It appears only as the one-line seabed caption under the ocean
-  scene ("The seabed can follow a different legal boundary"), never sequenced
-  into the boundary track alongside territorial sea / contiguous zone / EEZ /
-  high seas as if it were a fourth or fifth stop on the same line.
+  same limits. The continental shelf is not a fifth sequential water zone. 
+  It may appear in the Seabed activity and Legal X-Ray as a vertically layered 
+  seabed/subsoil regime, but it must never be presented as the next horizontal 
+  water zone after the EEZ.
 - **Every boundary equality favours the zone inside it.** Exactly 12 NM is
   still Territorial Sea, exactly 200 NM is still EEZ (UNCLOS's "not exceeding"
   phrasing) --- `getZoneId` uses `<=`, and `spec/ocean-state.test.ts`'s boundary
