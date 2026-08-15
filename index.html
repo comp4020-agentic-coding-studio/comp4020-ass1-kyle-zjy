@@ -18,6 +18,7 @@
     </header>
 
     <div id="zone-announcer" class="visually-hidden" role="status" aria-live="polite"></div>
+    <div id="boundary-announcer" class="visually-hidden" role="status" aria-live="polite"></div>
 
     <main>
       <section class="hero">
@@ -28,7 +29,7 @@
       </section>
 
       <section class="ocean" aria-label="Ocean cross-section and ship control">
-        <div class="ocean-scene">
+        <div class="ocean-scene" id="ocean-scene">
           <svg
             class="ocean-backdrop"
             viewBox="0 0 1000 320"
@@ -37,11 +38,32 @@
             focusable="false"
           >
             <rect class="sky" x="0" y="0" width="1000" height="200" />
-            <path class="seabed" d="M0,320 L0,235 C160,255 420,300 1000,320 Z" />
+            <path class="wave wave-far" d="M0,196 Q250,188 500,195 T1000,193 L1000,199 Q750,192 500,201 T0,202 Z" />
+            <path class="wave wave-near" d="M0,204 Q250,214 500,206 T1000,208 L1000,214 Q750,222 500,212 T0,218 Z" />
+            <path
+              class="seabed-margin"
+              d="M0,320 L0,236 C90,248 150,262 210,278 C280,296 340,306 420,312 L420,320 Z"
+            />
+            <path class="seabed-deep" d="M420,320 L420,312 C560,317 760,320 1000,320 Z" />
             <path class="sea" d="M0,320 L0,190 Q250,178 500,188 T1000,190 L1000,320 Z" />
-            <path class="land" d="M0,0 L92,0 L74,110 L46,146 L18,172 L0,192 Z" />
-            <path class="land-shadow" d="M0,192 L18,172 L46,146 L52,150 L22,178 L0,206 Z" />
+            <path class="land" d="M0,0 L86,0 L96,26 L78,52 L88,74 L66,98 L72,118 L48,140 L54,156 L28,176 L10,190 L0,196 Z" />
+            <path
+              class="land-shadow"
+              d="M0,196 L10,190 L28,176 L34,180 L16,196 L0,206 Z"
+            />
           </svg>
+
+          <div class="xray-layers" id="xray-layers" aria-hidden="true">
+            <div class="xray-layer" data-layer="airspace">
+              <span class="xray-layer-label">Airspace</span>
+            </div>
+            <div class="xray-layer" data-layer="water">
+              <span class="xray-layer-label">Water column</span>
+            </div>
+            <div class="xray-layer" data-layer="seabed">
+              <span class="xray-layer-label">Seabed</span>
+            </div>
+          </div>
 
           <div class="boundary-track" aria-hidden="true">
             <div class="boundary" data-boundary="territorial-sea" data-nm="12" style="--pos: 4.8%">
@@ -58,6 +80,19 @@
             </div>
           </div>
 
+          <div class="ship-marker" id="ship-marker" aria-hidden="true">
+            <span class="ship-seabed-line"></span>
+            <span class="ship-wake"></span>
+            <svg class="ship-hull" viewBox="0 0 44 26" aria-hidden="true" focusable="false">
+              <path d="M4,15 L9,6 L35,6 L40,15 L33,21 L11,21 Z" />
+            </svg>
+            <svg class="ship-activity-icon" id="ship-activity-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="5" />
+            </svg>
+          </div>
+
+          <div class="boundary-toast" id="boundary-toast" aria-hidden="true"></div>
+
           <input
             type="range"
             id="ship-distance"
@@ -71,7 +106,29 @@
         </div>
 
         <p class="distance-readout"><span id="distance-value">0</span> NM FROM BASELINE</p>
+        <p class="approach-hint" id="approach-hint" aria-hidden="true"></p>
+
+        <div class="progress-ruler" aria-hidden="true">
+          <span class="ruler-label">Australia</span>
+          <span class="ruler-track">
+            <span class="ruler-tick" style="--tick-pos: 4.8%"><span class="ruler-tick-label">12</span></span>
+            <span class="ruler-tick" style="--tick-pos: 9.6%"><span class="ruler-tick-label">24</span></span>
+            <span class="ruler-tick" style="--tick-pos: 80%"><span class="ruler-tick-label">200</span></span>
+            <span class="ruler-marker" id="ruler-marker"></span>
+          </span>
+          <span class="ruler-label">Open ocean</span>
+        </div>
+
         <p class="seabed-note">The seabed can follow a different legal boundary.</p>
+        <p class="scale-note">Simplified cross-section — not to scale.</p>
+
+        <div class="xray-control">
+          <label class="xray-label">
+            <input type="checkbox" id="legal-xray-toggle" />
+            <span class="xray-switch" aria-hidden="true"></span>
+            <span class="xray-text">Legal X-ray</span>
+          </label>
+        </div>
       </section>
 
       <section class="legal-state" aria-labelledby="zone-heading">
@@ -89,6 +146,78 @@
             <span class="overlap-caption">Contiguous control · 12–24 NM</span>
           </div>
         </div>
+
+        <div class="authority-matrix-wrap">
+          <h3 class="section-heading">What changes here?</h3>
+          <dl class="authority-matrix" id="authority-matrix">
+            <div class="matrix-row" data-row="sovereignty">
+              <dt>Sovereignty</dt>
+              <dd id="matrix-value-sovereignty"></dd>
+            </div>
+            <div class="matrix-row" data-row="resource-rights">
+              <dt>Resource rights</dt>
+              <dd id="matrix-value-resource-rights"></dd>
+            </div>
+            <div class="matrix-row" data-row="navigation">
+              <dt>Navigation</dt>
+              <dd id="matrix-value-navigation"></dd>
+            </div>
+            <div class="matrix-row" data-row="overflight">
+              <dt>Overflight</dt>
+              <dd id="matrix-value-overflight"></dd>
+            </div>
+            <div class="matrix-row" data-row="special-control">
+              <dt>Special coastal-state control</dt>
+              <dd id="matrix-value-special-control"></dd>
+            </div>
+            <div class="matrix-row" data-row="seabed">
+              <dt>Seabed</dt>
+              <dd id="matrix-value-seabed"></dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="activity-select" aria-label="Ship activity">
+        <fieldset class="activity-group">
+          <legend class="section-heading">What is your ship doing?</legend>
+          <label class="activity-option" data-activity="navigate">
+            <input type="radio" name="activity" value="navigate" checked />
+            <span>Navigate</span>
+          </label>
+          <label class="activity-option" data-activity="fish">
+            <input type="radio" name="activity" value="fish" />
+            <span>Fish</span>
+          </label>
+          <label class="activity-option" data-activity="research">
+            <input type="radio" name="activity" value="research" />
+            <span>Research</span>
+          </label>
+          <label class="activity-option" data-activity="seabed">
+            <input type="radio" name="activity" value="seabed" />
+            <span>Seabed</span>
+          </label>
+        </fieldset>
+        <p class="activity-question" id="activity-question"></p>
+        <p class="activity-answer" id="activity-answer" aria-live="polite"></p>
+      </section>
+
+      <section class="captains-log" aria-label="Captain's log">
+        <h2 class="section-heading">Captain's log</h2>
+        <ul class="log-list" id="log-list">
+          <li class="log-entry" data-nm="12" data-discovered="false">
+            <span class="log-marker" aria-hidden="true"></span>
+            <span class="log-text" id="log-text-12">12 NM — not yet crossed</span>
+          </li>
+          <li class="log-entry" data-nm="24" data-discovered="false">
+            <span class="log-marker" aria-hidden="true"></span>
+            <span class="log-text" id="log-text-24">24 NM — not yet crossed</span>
+          </li>
+          <li class="log-entry" data-nm="200" data-discovered="false">
+            <span class="log-marker" aria-hidden="true"></span>
+            <span class="log-text" id="log-text-200">200 NM — not yet crossed</span>
+          </li>
+        </ul>
       </section>
 
       <p class="disclaimer">

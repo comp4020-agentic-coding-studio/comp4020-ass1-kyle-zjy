@@ -29,3 +29,36 @@ export function getZoneId(distanceNm: number): ZoneId {
   if (d <= BOUNDARIES.eez) return "eez";
   return "high-seas";
 }
+
+export type ActivityId = "navigate" | "fish" | "research" | "seabed";
+
+// The three legal lines a first-time crossing is worth calling out. Kept as
+// its own list (rather than reusing BOUNDARIES' values) so the "event" axis
+// can be reasoned about independently of the zone-lookup axis above.
+export const CROSSING_BOUNDARIES = [12, 24, 200] as const;
+export type BoundaryNm = (typeof CROSSING_BOUNDARIES)[number];
+
+// One formula for "how far through the whole journey is this", so the ship
+// marker, the progress ruler and the continuous openness fade can't drift
+// apart from each other or from the boundary markers' own --pos percentages.
+export function getProgressFraction(distanceNm: number): number {
+  return clampDistance(distanceNm) / MAX_NM;
+}
+
+// Boundaries newly crossed travelling outward from fromNm to toNm. Moving
+// backward or staying still always yields none — this is what makes a
+// first-time-only discovery event possible without extra bookkeeping at the
+// call site beyond remembering the previous distance.
+export function getBoundariesCrossedOutbound(fromNm: number, toNm: number): BoundaryNm[] {
+  if (toNm <= fromNm) return [];
+  return CROSSING_BOUNDARIES.filter((b) => b > fromNm && b <= toNm);
+}
+
+const APPROACH_NM = 2;
+
+// The nearest boundary the ship is about to cross, while still short of it —
+// purely an ambient hint, not gated by discovery state like the toast event.
+export function getApproachingBoundary(distanceNm: number): BoundaryNm | null {
+  const d = clampDistance(distanceNm);
+  return CROSSING_BOUNDARIES.find((b) => d < b && b - d <= APPROACH_NM) ?? null;
+}
