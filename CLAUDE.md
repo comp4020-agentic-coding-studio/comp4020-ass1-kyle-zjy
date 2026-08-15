@@ -161,3 +161,53 @@ catching you out, a fact about the stack the agent keeps getting wrong --- write
 it down here. Growing this file is the work of harness engineering, and the gap
 between this boilerplate and your own version is part of what your prototype
 says about the developer you're becoming.
+
+## This project: "Who Owns the Ocean?"
+
+One page, one mechanic: a native `<input type="range">` moves a ship away from
+the Australian coast; the legal status of the water changes as it crosses
+invisible boundaries at 12, 24 and 200 nautical miles (territorial sea →
+contiguous zone → EEZ → high seas). The risks below are specific to *this*
+prototype, not generic advice --- don't add a second interaction, a map, or a
+navigation menu to "improve" it; the single mechanic is the point.
+
+- **The distance in nautical miles is the only source of truth.** `getZoneId`
+  in `ocean-state.ts` decides the zone from a plain number. Never derive the
+  zone, the ship's position, or a boundary marker's emphasis from a DOM
+  rectangle, a pixel offset, or `window.innerWidth`. That's what lets the state
+  survive a viewport resize mid-interaction without resetting --- there's
+  nothing pixel-based to go stale. If you ever need the ship to react to
+  layout, resize the *scene*, not the *distance*.
+- **Sovereignty and sovereign rights are not interchangeable.** Australia has
+  full sovereignty in the territorial sea (0--12 NM); in the EEZ it only has
+  sovereign rights over resources plus limited jurisdiction. Never write
+  "Australia owns" anything, and never call the EEZ "Australian territory" ---
+  `ocean-content.ts`'s EEZ copy says the opposite on purpose
+  (`spec/ocean-app.test.ts` asserts the phrase "not australian territory"
+  literally appears). If new copy is added, check it says sovereign rights for
+  the EEZ and sovereignty only for the territorial sea.
+- **The high seas are not lawless.** The whole point of the ending beat
+  ("Australia's EEZ ends here. The law does not.") is that international law
+  keeps applying past 200 NM even though no state's EEZ does. Don't let new
+  copy imply the opposite by omission --- `spec/ocean-app.test.ts` checks for
+  "the law does not" literally, but that phrase alone doesn't stop someone from
+  adding a paragraph next to it that undercuts it.
+- **The continental shelf is not a fifth zone.** It's a seabed/subsoil regime
+  that can extend past the EEZ's water-column boundary and doesn't share the
+  same limits. It appears only as the one-line seabed caption under the ocean
+  scene ("The seabed can follow a different legal boundary"), never sequenced
+  into the boundary track alongside territorial sea / contiguous zone / EEZ /
+  high seas as if it were a fourth or fifth stop on the same line.
+- **Every boundary equality favours the zone inside it.** Exactly 12 NM is
+  still Territorial Sea, exactly 200 NM is still EEZ (UNCLOS's "not exceeding"
+  phrasing) --- `getZoneId` uses `<=`, and `spec/ocean-state.test.ts`'s boundary
+  table (11/12/13, 23/24/25, 199/200/201) is what catches an off-by-one if this
+  ever gets refactored.
+- **Text de-emphasis must use a colour, not opacity, against the per-zone
+  background.** `body[data-zone="..."]` swaps the whole colour scheme
+  (`styles.css`), including a background that shifts from pale to near-black
+  across zones. `opacity` on ink blends toward whatever that background is and
+  can silently drop below WCAG AA contrast on some zones even though it looks
+  fine on the zone you were staring at when you wrote it. Use the `--ink-muted`
+  custom property (already tuned per zone) for de-emphasised text instead of
+  `opacity`.
