@@ -138,18 +138,18 @@ a {
   padding: 0 0 clamp(1rem, 3vw, 2rem);
 }
 
-.ocean-sticky {
+.ocean-scene {
+  /* Sticky (not relative) so the scene itself — not just its wrapper —
+     pins flush to the viewport top on scroll. Sticky is still a
+     positioned value, so it continues to serve as the containing block
+     for the ship/boundary/xray children's position: absolute below. */
   position: sticky;
   top: 0;
   z-index: 5;
-  background: linear-gradient(180deg, var(--page-top), var(--page-bottom));
-}
-
-.ocean-scene {
-  position: relative;
   width: 100%;
   aspect-ratio: 1000 / 320;
   overflow: hidden;
+  background: linear-gradient(180deg, var(--page-top), var(--page-bottom));
 
   /* Shared with .ship-control's real thumb and .ship-marker's calc()
      below — the three must stay in sync or the decorative ship drifts
@@ -159,9 +159,9 @@ a {
 
 /* Desktop-only: cap the scene's own box height so the ocean occupies
    roughly half the viewport, leaving the info grid visible below it once
-   the scene is pinned via .ocean-sticky. Width stays an explicit 100% (of
-   an unpadded ancestor chain all the way to <body>) rather than "auto",
-   so the box spans edge-to-edge instead of being derived from height via
+   the scene is pinned. Width stays an explicit 100% (of an unpadded
+   ancestor chain all the way to <body>) rather than "auto", so the box
+   spans edge-to-edge instead of being derived from height via
    aspect-ratio — with both width and height explicit, aspect-ratio has no
    effect, which is intentional here. All ship/boundary/xray positioning
    inside the scene is percentage-based, so this cannot affect drag math —
