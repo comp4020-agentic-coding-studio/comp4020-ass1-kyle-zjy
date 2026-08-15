@@ -135,22 +135,21 @@ a {
 }
 
 .ocean {
-  /* Sticky + full-bleed on the whole section (not just #ocean-scene), so
-     the scene, distance readout and the ruler/notes footer under it all
-     pin together as one unit once the hero scrolls past. width: 100vw
-     plus the negative auto-margins is the standard full-bleed-inside-a-
-     non-full-width-ancestor pattern; body's overflow-x: hidden (below)
-     clips the sliver of horizontal overflow it can introduce on browsers
-     that don't subtract the scrollbar from 100vw, instead of it producing
-     an actual horizontal scrollbar. */
+  /* Plain, unpositioned container — no ancestor here constrains width
+     (main/body/html carry no max-width), so .ocean-scene's own
+     width: 100% below already reaches both viewport edges without any
+     full-bleed breakout on .ocean itself. */
+  padding: 0 0 clamp(1rem, 3vw, 2rem);
+}
+
+.ocean-sticky {
+  /* Only the interactive scene (ship, boundaries, X-ray) pins to the
+     top; the distance readout, ruler, and notes now live in
+     .ocean-meta below and scroll normally. Nothing constrains this
+     wrapper's width either, so it's already edge-to-edge like .ocean. */
   position: sticky;
   top: 0;
   z-index: 50;
-  width: 100vw;
-  margin-right: calc(50% - 50vw);
-  margin-left: calc(50% - 50vw);
-  padding: 0 0 clamp(1rem, 3vw, 2rem);
-  background: linear-gradient(180deg, var(--page-top), var(--page-bottom));
 }
 
 .ocean-scene {
@@ -167,12 +166,13 @@ a {
 
 /* Desktop-only: cap the scene's own box height so the ocean occupies
    roughly half the viewport, leaving the info grid visible below it once
-   .ocean is pinned. Width stays an explicit 100% (of an unpadded ancestor
-   chain all the way to <body>) rather than "auto", so the box spans
-   edge-to-edge instead of being derived from height via aspect-ratio —
-   with both width and height explicit, aspect-ratio has no effect, which
-   is intentional here. All ship/boundary/xray positioning inside the
-   scene is percentage-based, so this cannot affect drag math — it only
+   .ocean-sticky is pinned. Width stays an explicit 100% (of an unpadded
+   ancestor chain all the way to <body>) rather than "auto", so the box
+   spans edge-to-edge instead of being derived from height via
+   aspect-ratio — with both width and height explicit, aspect-ratio has
+   no effect, which is intentional here. All ship/boundary/xray
+   positioning inside the scene is percentage-based, so this cannot
+   affect drag math — it only
    changes the box the percentages resolve against. Gated to widths above
    the existing mobile breakpoint so phone sizing is untouched. */
 @media (width >= 601px) {
