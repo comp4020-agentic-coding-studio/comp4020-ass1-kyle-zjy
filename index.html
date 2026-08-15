@@ -152,15 +152,14 @@
           <h2 id="zone-heading">Territorial Sea</h2>
           <p class="zone-statement" id="zone-statement">Australia has sovereignty here.</p>
           <div class="zone-body" id="zone-body"></div>
-          <div class="overlap-diagram" id="overlap-diagram" hidden aria-hidden="true">
-            <div class="overlap-row overlap-row-eez">
-              <span class="overlap-fill" style="width: 100%"></span>
-              <span class="overlap-caption">EEZ</span>
-            </div>
-            <div class="overlap-row overlap-row-contiguous">
-              <span class="overlap-fill" style="width: 12%"></span>
-              <span class="overlap-caption">Contiguous control · 12–24 NM</span>
-            </div>
+          <div class="regime-panel" id="regime-panel" hidden>
+            <p class="regime-panel-label">Legal regimes active here</p>
+            <ul class="regime-list" id="regime-list">
+              <li class="regime-tag" id="regime-tag-eez" data-regime="eez" hidden>Exclusive Economic Zone</li>
+              <li class="regime-tag" id="regime-tag-contiguous" data-regime="contiguous" hidden>
+                Contiguous Zone control
+              </li>
+            </ul>
           </div>
         </section>
 

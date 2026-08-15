@@ -56,7 +56,9 @@ export function mount(doc: Document): void {
   const zoneHeading = doc.querySelector<HTMLElement>("#zone-heading");
   const zoneStatement = doc.querySelector<HTMLElement>("#zone-statement");
   const zoneBody = doc.querySelector<HTMLElement>("#zone-body");
-  const overlapDiagram = doc.querySelector<HTMLElement>("#overlap-diagram");
+  const regimePanel = doc.querySelector<HTMLElement>("#regime-panel");
+  const regimeTagEez = doc.querySelector<HTMLElement>("#regime-tag-eez");
+  const regimeTagContiguous = doc.querySelector<HTMLElement>("#regime-tag-contiguous");
   const announcer = doc.querySelector<HTMLElement>("#zone-announcer");
   const boundaryAnnouncer = doc.querySelector<HTMLElement>("#boundary-announcer");
   const boundaryEls = Array.from(doc.querySelectorAll<HTMLElement>("[data-boundary]"));
@@ -269,7 +271,10 @@ export function mount(doc: Document): void {
         }),
       );
     }
-    if (overlapDiagram) overlapDiagram.hidden = !content.overlapDiagram;
+    const { eez, contiguous } = content.activeRegimes;
+    if (regimePanel) regimePanel.hidden = !eez && !contiguous;
+    if (regimeTagEez) regimeTagEez.hidden = !eez;
+    if (regimeTagContiguous) regimeTagContiguous.hidden = !contiguous;
     if (announcer) announcer.textContent = content.announcement;
     updateAuthorityMatrix(state.zone);
     updateXrayZoneContent(state.zone);

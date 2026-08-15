@@ -6,7 +6,10 @@ export interface ZoneContent {
   statement: string;
   paragraphs: string[];
   announcement: string;
-  overlapDiagram: boolean;
+  // Which overlapping coastal-state legal regimes currently apply, shown as
+  // the "legal regimes active here" badge list. Not a progress/completion
+  // measure — each regime is either in force at this distance or it isn't.
+  activeRegimes: { eez: boolean; contiguous: boolean };
 }
 
 // Copy is deliberately conservative and short — see CLAUDE.md's legal-content
@@ -22,7 +25,7 @@ export const ZONE_CONTENT: Record<ZoneId, ZoneContent> = {
       "Foreign ships may still exercise rights such as innocent passage.",
     ],
     announcement: "Now in the Territorial Sea: Australia has sovereignty here.",
-    overlapDiagram: false,
+    activeRegimes: { eez: false, contiguous: false },
   },
   "contiguous-zone": {
     id: "contiguous-zone",
@@ -33,7 +36,7 @@ export const ZONE_CONTENT: Record<ZoneId, ZoneContent> = {
       "Different legal regimes now overlap: the Exclusive Economic Zone regime already applies underneath this control.",
     ],
     announcement: "Now in the Contiguous Zone: sovereignty has ended, some control remains.",
-    overlapDiagram: true,
+    activeRegimes: { eez: true, contiguous: true },
   },
   eez: {
     id: "eez",
@@ -44,7 +47,7 @@ export const ZONE_CONTENT: Record<ZoneId, ZoneContent> = {
       "Other states retain important freedoms, including navigation and overflight.",
     ],
     announcement: "Now in the Exclusive Economic Zone: not Australian territory.",
-    overlapDiagram: false,
+    activeRegimes: { eez: true, contiguous: false },
   },
   "high-seas": {
     id: "high-seas",
@@ -55,6 +58,6 @@ export const ZONE_CONTENT: Record<ZoneId, ZoneContent> = {
       "Beyond national jurisdiction does not mean beyond law: international law, including the new BBNJ Agreement on marine biodiversity, still governs activities here.",
     ],
     announcement: "Now in the High Seas: Australia's EEZ ends here. The law does not.",
-    overlapDiagram: false,
+    activeRegimes: { eez: false, contiguous: false },
   },
 };

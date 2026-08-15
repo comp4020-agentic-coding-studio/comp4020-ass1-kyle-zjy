@@ -846,40 +846,50 @@ body[data-zone="high-seas"] .ship-mast {
   margin-bottom: 0;
 }
 
-.overlap-diagram {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+/* A set of small labelled tags naming which overlapping legal regimes apply
+   at the ship's current distance — not a measure of progress or completion,
+   so no fill/track metaphor: each tag is either present or absent. */
+.regime-panel {
   margin-top: 0.75rem;
-  font-size: 0.75rem;
 }
 
-.overlap-row {
-  position: relative;
-  height: 1.4rem;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgb(120 140 150 / 16%);
+.regime-panel-label {
+  margin: 0 0 0.5rem;
+  color: var(--ink-muted);
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-.overlap-fill {
-  position: absolute;
-  inset-block: 0;
-  left: 0;
-  background: rgb(120 190 255 / 35%);
+.regime-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.overlap-row-contiguous .overlap-fill {
-  background: rgb(255 205 120 / 45%);
-}
-
-.overlap-caption {
-  position: absolute;
-  top: 50%;
-  left: 0.6rem;
-  transform: translateY(-50%);
-  white-space: nowrap;
+.regime-tag {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid rgb(120 140 150 / 30%);
+  border-radius: 0.3rem;
   color: var(--ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.regime-tag[data-regime="eez"] {
+  border-color: rgb(120 190 255 / 55%);
+  background: rgb(120 190 255 / 14%);
+}
+
+.regime-tag[data-regime="contiguous"] {
+  border-color: rgb(255 205 120 / 55%);
+  background: rgb(255 205 120 / 16%);
 }
 
 .authority-matrix-wrap {

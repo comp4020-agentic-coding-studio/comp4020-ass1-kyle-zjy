@@ -242,6 +242,36 @@ describe("legal X-ray toggle", () => {
   });
 });
 
+describe("active legal regimes panel", () => {
+  function regimeTag(id: "eez" | "contiguous"): HTMLElement {
+    return document.querySelector<HTMLElement>(`#regime-tag-${id}`)!;
+  }
+
+  it("hides the whole panel in the territorial sea", () => {
+    setDistance(5);
+    expect(document.querySelector("#regime-panel")!.hasAttribute("hidden")).toBe(true);
+  });
+
+  it("shows both EEZ and contiguous-zone tags in the contiguous zone", () => {
+    setDistance(18);
+    expect(document.querySelector("#regime-panel")!.hasAttribute("hidden")).toBe(false);
+    expect(regimeTag("eez").hasAttribute("hidden")).toBe(false);
+    expect(regimeTag("contiguous").hasAttribute("hidden")).toBe(false);
+  });
+
+  it("shows only the EEZ tag beyond 24 NM", () => {
+    setDistance(85);
+    expect(document.querySelector("#regime-panel")!.hasAttribute("hidden")).toBe(false);
+    expect(regimeTag("eez").hasAttribute("hidden")).toBe(false);
+    expect(regimeTag("contiguous").hasAttribute("hidden")).toBe(true);
+  });
+
+  it("hides the whole panel beyond 200 NM", () => {
+    setDistance(201);
+    expect(document.querySelector("#regime-panel")!.hasAttribute("hidden")).toBe(true);
+  });
+});
+
 describe("authority matrix rendering", () => {
   it("renders both an actor and a value span per cell", () => {
     setDistance(85);
