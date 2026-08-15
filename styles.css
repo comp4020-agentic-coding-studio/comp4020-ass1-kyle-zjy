@@ -159,16 +159,18 @@ a {
 
 /* Desktop-only: cap the scene's own box height so the ocean occupies
    roughly half the viewport, leaving the info grid visible below it once
-   the scene is pinned via .ocean-sticky. All ship/boundary/xray positioning
+   the scene is pinned via .ocean-sticky. Width stays an explicit 100% (of
+   an unpadded ancestor chain all the way to <body>) rather than "auto",
+   so the box spans edge-to-edge instead of being derived from height via
+   aspect-ratio — with both width and height explicit, aspect-ratio has no
+   effect, which is intentional here. All ship/boundary/xray positioning
    inside the scene is percentage-based, so this cannot affect drag math —
    it only changes the box the percentages resolve against. Gated to widths
    above the existing mobile breakpoint so phone sizing is untouched. */
 @media (width >= 601px) {
   .ocean-scene {
-    width: auto;
+    width: 100%;
     height: 48vh;
-    max-width: 100%;
-    margin: 0 auto;
   }
 }
 
