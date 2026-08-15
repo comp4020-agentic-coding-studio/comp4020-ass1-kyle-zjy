@@ -2,7 +2,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ACTIVITY_ANSWERS, AUTHORITY_MATRIX } from "../ocean-journey-content";
+import { ACTIVITY_ANSWERS, AUTHORITY_MATRIX, XRAY_ZONE_LAYERS } from "../ocean-journey-content";
+import { getVisualPosition } from "../ocean-state";
 
 // Same real-markup + real-controller mount pattern as spec/ocean-app.test.ts,
 // but re-mounted fresh per test (rather than once in beforeAll) since these
@@ -41,8 +42,8 @@ function chooseActivity(id: string): void {
 }
 
 // Toast cards remove themselves on the CSS animation's "animationend" event
-// (see main.ts's showBoundaryEvents), which jsdom never fires on its own —
-// so tests that care about a single crossing's toast count must simulate it
+// (see main.ts's showMinorToast), which jsdom never fires on its own — so
+// tests that care about a single crossing's toast count must simulate it
 // between steps, the same way a real animation completing would.
 function clearToasts(): void {
   for (const card of document.querySelectorAll("#boundary-toast .toast-card")) {
@@ -52,6 +53,20 @@ function clearToasts(): void {
 
 function toastCount(): number {
   return document.querySelectorAll("#boundary-toast .toast-card").length;
+}
+
+// The climax overlay's last beat clears both the overlay and the
+// body.climax-active hook on "animationend", same jsdom caveat as toasts.
+function clearClimax(): void {
+  const beats = document.querySelectorAll("#climax-overlay .climax-beat");
+  beats[beats.length - 1]?.dispatchEvent(new Event("animationend", { bubbles: true }));
+}
+
+function climaxActive(): boolean {
+  return (
+    document.body.classList.contains("climax-active") &&
+    document.querySelector("#climax-overlay")!.classList.contains("is-active")
+  );
 }
 
 describe("boundary crossing events", () => {
@@ -69,16 +84,33 @@ describe("boundary crossing events", () => {
     expect(toastCount()).toBe(0);
   });
 
-  it("gives the 200 NM crossing two toast beats", () => {
+  it("fires independent single-beat toasts for 12 and 24 crossed together", () => {
     setDistance(25);
     expect(toastCount()).toBe(2); // 12 and 24, each a single-beat toast
-    clearToasts();
+    expect(climaxActive()).toBe(false);
+  });
 
+  it("gives the 200 NM crossing its own climax overlay, not a toast", () => {
     setDistance(199);
+    clearToasts();
     expect(toastCount()).toBe(0);
+    expect(climaxActive()).toBe(false);
 
     setDistance(201);
-    expect(toastCount()).toBe(2);
+    expect(climaxActive()).toBe(true);
+    expect(toastCount()).toBe(0);
+    expect(document.querySelector('.log-entry[data-nm="200"]')!.getAttribute("data-discovered")).toBe("true");
+
+    clearClimax();
+    expect(climaxActive()).toBe(false);
+  });
+
+  it("plays only the climax, suppressing minor toasts, when 12/24/200 are all crossed in one fast drag", () => {
+    setDistance(205);
+    expect(climaxActive()).toBe(true);
+    expect(toastCount()).toBe(0);
+    expect(document.querySelector('.log-entry[data-nm="12"]')!.getAttribute("data-discovered")).toBe("true");
+    expect(document.querySelector('.log-entry[data-nm="24"]')!.getAttribute("data-discovered")).toBe("true");
     expect(document.querySelector('.log-entry[data-nm="200"]')!.getAttribute("data-discovered")).toBe("true");
   });
 
@@ -103,6 +135,37 @@ describe("boundary crossing events", () => {
 
     setDistance(15);
     expect(document.querySelector("#approach-hint")!.textContent).toBe("");
+  });
+});
+
+describe("aria-valuetext", () => {
+  it("names both the distance and the zone, and updates as either changes", () => {
+    setDistance(5);
+    expect(slider().getAttribute("aria-valuetext")).toMatch(/^5 nautical miles/);
+    expect(slider().getAttribute("aria-valuetext")).toMatch(/Territorial Sea/i);
+
+    setDistance(210);
+    expect(slider().getAttribute("aria-valuetext")).toMatch(/^210 nautical miles/);
+    expect(slider().getAttribute("aria-valuetext")).toMatch(/High Seas/i);
+  });
+});
+
+describe("non-linear visual scale", () => {
+  it("matches the piecewise spec at every segment boundary", () => {
+    expect(getVisualPosition(0)).toBeCloseTo(0);
+    expect(getVisualPosition(12)).toBeCloseTo(0.2);
+    expect(getVisualPosition(24)).toBeCloseTo(0.35);
+    expect(getVisualPosition(200)).toBeCloseTo(0.8);
+    expect(getVisualPosition(250)).toBeCloseTo(1);
+  });
+
+  it("is monotonic non-decreasing across the whole range", () => {
+    let previous = -Infinity;
+    for (let nm = 0; nm <= 250; nm += 5) {
+      const fraction = getVisualPosition(nm);
+      expect(fraction).toBeGreaterThanOrEqual(previous);
+      previous = fraction;
+    }
   });
 });
 
@@ -145,14 +208,44 @@ describe("legal X-ray toggle", () => {
     expect(seabedLayer.getAttribute("data-highlight")).toBe("true");
     expect(waterLayer.getAttribute("data-highlight")).toBe("false");
   });
+
+  it("updates the X-ray layer labels and captions when the zone changes, not just the highlight", () => {
+    expect(document.querySelector("#xray-label-water")!.textContent).toBe(
+      XRAY_ZONE_LAYERS["territorial-sea"].water.label,
+    );
+    expect(document.querySelector("#xray-caption-water")!.textContent).toBe(
+      XRAY_ZONE_LAYERS["territorial-sea"].water.caption,
+    );
+
+    setDistance(85);
+    expect(document.querySelector("#xray-label-water")!.textContent).toBe(XRAY_ZONE_LAYERS.eez.water.label);
+    expect(document.querySelector("#xray-caption-water")!.textContent).toBe(XRAY_ZONE_LAYERS.eez.water.caption);
+    expect(document.querySelector("#xray-label-water")!.textContent).not.toBe(
+      XRAY_ZONE_LAYERS["territorial-sea"].water.label,
+    );
+  });
+});
+
+describe("authority matrix rendering", () => {
+  it("renders both an actor and a value span per cell", () => {
+    setDistance(85);
+    for (const row of AUTHORITY_MATRIX) {
+      const actorEl = document.querySelector(`#matrix-actor-${row.id}`)!;
+      const valueEl = document.querySelector(`#matrix-value-${row.id}`)!;
+      expect(actorEl.textContent).toBe(row.values.eez.actor);
+      expect(valueEl.textContent).toBe(row.values.eez.value);
+    }
+  });
 });
 
 describe("authority matrix content safety", () => {
   it("never claims the EEZ is Australian territory or that Australia has sovereignty there", () => {
     for (const row of AUTHORITY_MATRIX) {
-      expect(row.values.eez.toLowerCase()).not.toMatch(/australian territory/);
+      expect(row.values.eez.value.toLowerCase()).not.toMatch(/australian territory/);
     }
-    expect(AUTHORITY_MATRIX.find((r) => r.id === "sovereignty")!.values.eez.toLowerCase()).not.toBe("australia");
+    expect(AUTHORITY_MATRIX.find((r) => r.id === "sovereignty")!.values.eez.actor.toLowerCase()).not.toBe(
+      "australia",
+    );
   });
 
   it("never sequences the seabed row as a distinct fifth zone label", () => {

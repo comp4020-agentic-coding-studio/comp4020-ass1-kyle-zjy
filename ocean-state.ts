@@ -45,6 +45,31 @@ export function getProgressFraction(distanceNm: number): number {
   return clampDistance(distanceNm) / MAX_NM;
 }
 
+// The screen-space counterpart to getProgressFraction: still a pure function
+// of the NM distance (never a DOM measurement), but non-linear, so the two
+// tightly-packed early boundaries (12, 24 NM) get enough screen room to read
+// as distinct moments instead of being crushed into the first 10% of a linear
+// track. distance/getZoneId/every legal derivation still only ever uses the
+// real NM number — this remaps the same number for placement only.
+const VISUAL_SEGMENTS: Array<[fromNm: number, toNm: number, fromFrac: number, toFrac: number]> = [
+  [0, BOUNDARIES.territorialSea, 0, 0.2],
+  [BOUNDARIES.territorialSea, BOUNDARIES.contiguousZone, 0.2, 0.35],
+  [BOUNDARIES.contiguousZone, BOUNDARIES.eez, 0.35, 0.8],
+  [BOUNDARIES.eez, MAX_NM, 0.8, 1],
+];
+
+export function getVisualPosition(distanceNm: number): number {
+  const d = clampDistance(distanceNm);
+  for (const [fromNm, toNm, fromFrac, toFrac] of VISUAL_SEGMENTS) {
+    if (d <= toNm) {
+      const span = toNm - fromNm;
+      const t = span === 0 ? 0 : (d - fromNm) / span;
+      return fromFrac + t * (toFrac - fromFrac);
+    }
+  }
+  return 1;
+}
+
 // Boundaries newly crossed travelling outward from fromNm to toNm. Moving
 // backward or staying still always yields none — this is what makes a
 // first-time-only discovery event possible without extra bookkeeping at the

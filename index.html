@@ -29,6 +29,7 @@
       </section>
 
       <section class="ocean" aria-label="Ocean cross-section and ship control">
+       <div class="ocean-sticky">
         <div class="ocean-scene" id="ocean-scene">
           <svg
             class="ocean-backdrop"
@@ -55,22 +56,25 @@
 
           <div class="xray-layers" id="xray-layers" aria-hidden="true">
             <div class="xray-layer" data-layer="airspace">
-              <span class="xray-layer-label">Airspace</span>
+              <span class="xray-layer-label" id="xray-label-airspace">Airspace</span>
+              <span class="xray-layer-caption" id="xray-caption-airspace"></span>
             </div>
             <div class="xray-layer" data-layer="water">
-              <span class="xray-layer-label">Water column</span>
+              <span class="xray-layer-label" id="xray-label-water">Water column</span>
+              <span class="xray-layer-caption" id="xray-caption-water"></span>
             </div>
             <div class="xray-layer" data-layer="seabed">
-              <span class="xray-layer-label">Seabed</span>
+              <span class="xray-layer-label" id="xray-label-seabed">Seabed</span>
+              <span class="xray-layer-caption" id="xray-caption-seabed"></span>
             </div>
           </div>
 
           <div class="boundary-track" aria-hidden="true">
-            <div class="boundary" data-boundary="territorial-sea" data-nm="12" style="--pos: 4.8%">
+            <div class="boundary" data-boundary="territorial-sea" data-nm="12" style="--pos: 20%">
               <span class="boundary-line"></span>
               <span class="boundary-label">12 NM</span>
             </div>
-            <div class="boundary" data-boundary="contiguous-zone" data-nm="24" style="--pos: 9.6%">
+            <div class="boundary" data-boundary="contiguous-zone" data-nm="24" style="--pos: 35%">
               <span class="boundary-line"></span>
               <span class="boundary-label">24 NM</span>
             </div>
@@ -93,6 +97,20 @@
 
           <div class="boundary-toast" id="boundary-toast" aria-hidden="true"></div>
 
+          <div class="climax-overlay" id="climax-overlay" aria-hidden="true">
+            <p class="climax-beat" id="climax-beat-0" style="--beat: 0"></p>
+            <p class="climax-beat" id="climax-beat-1" style="--beat: 1"></p>
+            <p class="climax-beat" id="climax-beat-2" style="--beat: 2"></p>
+          </div>
+
+          <div class="xray-control">
+            <label class="xray-label">
+              <input type="checkbox" id="legal-xray-toggle" />
+              <span class="xray-switch" aria-hidden="true"></span>
+              <span class="xray-text">Legal X-ray</span>
+            </label>
+          </div>
+
           <input
             type="range"
             id="ship-distance"
@@ -107,12 +125,13 @@
 
         <p class="distance-readout"><span id="distance-value">0</span> NM FROM BASELINE</p>
         <p class="approach-hint" id="approach-hint" aria-hidden="true"></p>
+       </div>
 
         <div class="progress-ruler" aria-hidden="true">
           <span class="ruler-label">Australia</span>
           <span class="ruler-track">
-            <span class="ruler-tick" style="--tick-pos: 4.8%"><span class="ruler-tick-label">12</span></span>
-            <span class="ruler-tick" style="--tick-pos: 9.6%"><span class="ruler-tick-label">24</span></span>
+            <span class="ruler-tick" style="--tick-pos: 20%"><span class="ruler-tick-label">12</span></span>
+            <span class="ruler-tick" style="--tick-pos: 35%"><span class="ruler-tick-label">24</span></span>
             <span class="ruler-tick" style="--tick-pos: 80%"><span class="ruler-tick-label">200</span></span>
             <span class="ruler-marker" id="ruler-marker"></span>
           </span>
@@ -121,14 +140,6 @@
 
         <p class="seabed-note">The seabed can follow a different legal boundary.</p>
         <p class="scale-note">Simplified cross-section — not to scale.</p>
-
-        <div class="xray-control">
-          <label class="xray-label">
-            <input type="checkbox" id="legal-xray-toggle" />
-            <span class="xray-switch" aria-hidden="true"></span>
-            <span class="xray-text">Legal X-ray</span>
-          </label>
-        </div>
       </section>
 
       <section class="legal-state" aria-labelledby="zone-heading">
@@ -152,27 +163,45 @@
           <dl class="authority-matrix" id="authority-matrix">
             <div class="matrix-row" data-row="sovereignty">
               <dt>Sovereignty</dt>
-              <dd id="matrix-value-sovereignty"></dd>
+              <dd>
+                <span class="matrix-actor" id="matrix-actor-sovereignty"></span>
+                <span class="matrix-value" id="matrix-value-sovereignty"></span>
+              </dd>
             </div>
             <div class="matrix-row" data-row="resource-rights">
               <dt>Resource rights</dt>
-              <dd id="matrix-value-resource-rights"></dd>
+              <dd>
+                <span class="matrix-actor" id="matrix-actor-resource-rights"></span>
+                <span class="matrix-value" id="matrix-value-resource-rights"></span>
+              </dd>
             </div>
             <div class="matrix-row" data-row="navigation">
               <dt>Navigation</dt>
-              <dd id="matrix-value-navigation"></dd>
+              <dd>
+                <span class="matrix-actor" id="matrix-actor-navigation"></span>
+                <span class="matrix-value" id="matrix-value-navigation"></span>
+              </dd>
             </div>
             <div class="matrix-row" data-row="overflight">
               <dt>Overflight</dt>
-              <dd id="matrix-value-overflight"></dd>
+              <dd>
+                <span class="matrix-actor" id="matrix-actor-overflight"></span>
+                <span class="matrix-value" id="matrix-value-overflight"></span>
+              </dd>
             </div>
             <div class="matrix-row" data-row="special-control">
               <dt>Special coastal-state control</dt>
-              <dd id="matrix-value-special-control"></dd>
+              <dd>
+                <span class="matrix-actor" id="matrix-actor-special-control"></span>
+                <span class="matrix-value" id="matrix-value-special-control"></span>
+              </dd>
             </div>
             <div class="matrix-row" data-row="seabed">
               <dt>Seabed</dt>
-              <dd id="matrix-value-seabed"></dd>
+              <dd>
+                <span class="matrix-actor" id="matrix-actor-seabed"></span>
+                <span class="matrix-value" id="matrix-value-seabed"></span>
+              </dd>
             </div>
           </dl>
         </div>
@@ -221,8 +250,9 @@
       </section>
 
       <p class="disclaimer">
-        This is a simplified legal explainer, not a navigational chart or representation of
-        Australia's actual maritime boundaries.
+        Distances follow standard maritime-zone limits, but this is a simplified conceptual
+        transect, not a navigational chart. Australia's actual maritime boundaries vary by
+        coastline.
       </p>
     </main>
     <script type="module" src="./main.ts"></script>
