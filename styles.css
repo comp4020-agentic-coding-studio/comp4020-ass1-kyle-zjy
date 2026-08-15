@@ -150,6 +150,11 @@ a {
   width: 100%;
   aspect-ratio: 1000 / 320;
   overflow: hidden;
+
+  /* Shared with .ship-control's real thumb and .ship-marker's calc()
+     below — the three must stay in sync or the decorative ship drifts
+     off the real (invisible) draggable thumb it's meant to overlay. */
+  --ship-thumb-w: 2.75rem;
 }
 
 .ocean-backdrop {
@@ -267,6 +272,7 @@ a {
   inset: 0;
   z-index: 1;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 500ms ease;
 }
 
@@ -435,6 +441,7 @@ body[data-xray="on"] .xray-layers {
   top: 54%;
   right: 4%;
   left: 6%;
+  z-index: 7;
   height: 3rem;
   margin: 0;
   appearance: none;
@@ -462,7 +469,7 @@ body[data-xray="on"] .xray-layers {
 }
 
 .ship-control::-webkit-slider-thumb {
-  width: 2.75rem;
+  width: var(--ship-thumb-w);
   height: 1.9rem;
   appearance: none;
   opacity: 0;
@@ -471,7 +478,7 @@ body[data-xray="on"] .xray-layers {
 }
 
 .ship-control::-moz-range-thumb {
-  width: 2.75rem;
+  width: var(--ship-thumb-w);
   height: 1.9rem;
   border: none;
   opacity: 0;
@@ -482,9 +489,15 @@ body[data-xray="on"] .xray-layers {
 .ship-marker {
   position: absolute;
   top: 54%;
-  left: var(--ship-pos, 6%);
+
+  /* Mirrors the native thumb's own centring formula (track inset 6%/4%,
+     thumb half-width added, then the remaining travel scaled by the raw
+     0-1 slider fraction) so the decorative ship sits exactly on top of
+     the real, invisible, draggable thumb at every distance — not just
+     approximately at a few sampled points. */
+  left: calc(6% + (var(--ship-thumb-w) / 2) + var(--ship-frac, 0) * (90% - var(--ship-thumb-w)));
   z-index: 2;
-  width: 2.75rem;
+  width: var(--ship-thumb-w);
   height: 1.9rem;
   pointer-events: none;
   transform: translate(-50%, -50%);
@@ -1030,6 +1043,8 @@ body.climax-active .captains-log {
     aspect-ratio: 4 / 3;
     min-height: 260px;
     max-height: 300px;
+
+    --ship-thumb-w: 3.1rem;
   }
 
   .ocean-sticky {
@@ -1037,17 +1052,14 @@ body.climax-active .captains-log {
   }
 
   .ship-control::-webkit-slider-thumb {
-    width: 3.1rem;
     height: 2.15rem;
   }
 
   .ship-control::-moz-range-thumb {
-    width: 3.1rem;
     height: 2.15rem;
   }
 
   .ship-marker {
-    width: 3.1rem;
     height: 2.15rem;
   }
 

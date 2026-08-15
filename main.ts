@@ -98,7 +98,12 @@ export function mount(doc: Document): void {
   function updatePositions(): void {
     const fraction = getVisualPosition(state.distance);
     const percent = `${(fraction * 100).toFixed(2)}%`;
-    shipMarker?.style.setProperty("--ship-pos", percent);
+    // The ship marker is positioned via a calc() in styles.css that
+    // replicates the real range input's own thumb-centring formula, so it
+    // needs the raw 0-1 slider fraction (matching (value-min)/(max-min)),
+    // not the 6%-96% screen percent the ruler marker uses.
+    const rawFraction = (fraction - 0.06) / 0.9;
+    shipMarker?.style.setProperty("--ship-frac", rawFraction.toFixed(4));
     rulerMarker?.style.setProperty("--ship-pos", percent);
     oceanScene?.style.setProperty("--openness", (1 - fraction).toFixed(3));
   }
