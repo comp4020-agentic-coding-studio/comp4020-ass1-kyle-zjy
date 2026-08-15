@@ -28,8 +28,7 @@
         <p class="hero-cta">Move the ship away from Australia →</p>
       </section>
 
-      <section class="ocean" aria-label="Ocean cross-section and ship control">
-       <div class="ocean-sticky">
+      <div class="ocean-sticky" role="group" aria-label="Ocean cross-section and ship control">
         <div class="ocean-scene" id="ocean-scene">
           <svg
             class="ocean-backdrop"
@@ -125,27 +124,26 @@
             aria-label="Distance of ship from Australian baseline, in nautical miles"
           />
         </div>
-       </div>
+      </div>
 
-        <div class="ocean-meta">
-          <p class="distance-readout"><span id="distance-value">0</span> NM FROM BASELINE</p>
-          <p class="approach-hint" id="approach-hint" aria-hidden="true"></p>
+      <div class="ocean-meta">
+        <p class="distance-readout"><span id="distance-value">0</span> NM FROM BASELINE</p>
+        <p class="approach-hint" id="approach-hint" aria-hidden="true"></p>
 
-          <div class="progress-ruler" aria-hidden="true">
-            <span class="ruler-label">Australia</span>
-            <span class="ruler-track">
-              <span class="ruler-tick" style="--tick-pos: 30%"><span class="ruler-tick-label">12</span></span>
-              <span class="ruler-tick" style="--tick-pos: 52%"><span class="ruler-tick-label">24</span></span>
-              <span class="ruler-tick" style="--tick-pos: 88%"><span class="ruler-tick-label">200</span></span>
-              <span class="ruler-marker" id="ruler-marker"></span>
-            </span>
-            <span class="ruler-label">Open ocean</span>
-          </div>
-
-          <p class="seabed-note">The seabed can follow a different legal boundary.</p>
-          <p class="scale-note">Simplified cross-section — not to scale.</p>
+        <div class="progress-ruler" aria-hidden="true">
+          <span class="ruler-label">Australia</span>
+          <span class="ruler-track">
+            <span class="ruler-tick" style="--tick-pos: 30%"><span class="ruler-tick-label">12</span></span>
+            <span class="ruler-tick" style="--tick-pos: 52%"><span class="ruler-tick-label">24</span></span>
+            <span class="ruler-tick" style="--tick-pos: 88%"><span class="ruler-tick-label">200</span></span>
+            <span class="ruler-marker" id="ruler-marker"></span>
+          </span>
+          <span class="ruler-label">Open ocean</span>
         </div>
-      </section>
+
+        <p class="seabed-note">The seabed can follow a different legal boundary.</p>
+        <p class="scale-note">Simplified cross-section — not to scale.</p>
+      </div>
 
       <div class="info-grid">
         <section class="legal-state info-col" aria-labelledby="zone-heading">

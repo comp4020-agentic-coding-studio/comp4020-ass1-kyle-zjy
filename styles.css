@@ -134,22 +134,17 @@ a {
   letter-spacing: 0.02em;
 }
 
-.ocean {
-  /* Plain, unpositioned container — no ancestor here constrains width
-     (main/body/html carry no max-width), so .ocean-scene's own
-     width: 100% below already reaches both viewport edges without any
-     full-bleed breakout on .ocean itself. */
-  padding: 0 0 clamp(1rem, 3vw, 2rem);
-}
-
 .ocean-sticky {
-  /* Only the interactive scene (ship, boundaries, X-ray) pins to the
-     top; the distance readout, ruler, and notes now live in
-     .ocean-meta below and scroll normally. Nothing constrains this
-     wrapper's width either, so it's already edge-to-edge like .ocean. */
+  /* .ocean-sticky and .ocean-meta are independent siblings directly in
+     <main> (no shared wrapper) — only this one pins to the top; the
+     distance readout, ruler, and notes in .ocean-meta scroll normally
+     below it. width: 100vw is explicit rather than relying on "no
+     ancestor sets a max-width", since this is the element the sticky/
+     full-bleed requirement is actually about. */
   position: sticky;
   top: 0;
   z-index: 50;
+  width: 100vw;
 }
 
 .ocean-scene {
@@ -650,9 +645,11 @@ body[data-zone="high-seas"] .ship-mast {
 }
 
 .ocean-meta {
+  position: relative;
+  width: 100%;
   max-width: 40rem;
   margin: 0.5rem auto 0;
-  padding: 0.75rem 1rem 0;
+  padding: 0.75rem 1rem clamp(1rem, 3vw, 2rem);
   border-top: 1px solid rgb(120 140 150 / 18%);
 }
 
