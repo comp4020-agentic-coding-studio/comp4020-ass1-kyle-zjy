@@ -2,22 +2,22 @@
 
 ## What I built
 
-"Who Owns the Ocean?" is a single page with one mechanic: a native range
-input drags a ship away from the Australian coast, and the legal status of
-the water changes as it crosses invisible boundaries at 12, 24 and 200
-nautical miles --- territorial sea, contiguous zone, exclusive economic zone,
-high seas --- ending on the point it's built around: past 200 NM, in this
-simplified transect, the ship is beyond Australia's EEZ, where no state's
-EEZ applies but international law still does.
+"Who Owns the Ocean?" is a single page, one mechanic: a native range input
+drags a ship from the Australian coast, and the water's legal status changes
+at three boundaries --- 12, 24, 200 NM: territorial sea, contiguous zone,
+exclusive economic zone, high seas. Its point: in this simplified transect,
+crossing 200 NM takes the ship beyond Australia's EEZ; Australia's EEZ rights
+end there, but international law does not.
 
 ## The moments that mattered
 
 1. **The state had to survive a resize, so it couldn't be built from
    pixels.** Tracking the ship as a pixel offset and deriving the zone from
    it breaks the moment the scene's width changes mid-drag, since geometry
-   and "real" distance fall out of sync. Instead the range input's value
-   *is* the distance in nautical miles, `getZoneId` in `ocean-state.ts` is a
-   pure function of that number, and every visual element derives from it
+   and "real" distance fall out of sync. Instead the logical distance in
+   nautical miles is the single source of truth: the slider's on-screen
+   position is converted back to NM, `getZoneId` in `ocean-state.ts` is a
+   pure function of that NM number, and every visual element derives from it
    --- nothing reads the zone off geometry.
    `spec/ocean-app.test.ts`'s resize test (dispatch `resize` mid-drag, assert
    the zone is unchanged) verifies this, and it's why the rule is in
@@ -52,8 +52,9 @@ EEZ applies but international law still does.
    ([`e3879dd`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-kyle-zjy/commit/e3879dd)).
 
 4. **A real bug only showed up once I stopped treating automated checks as
-   the finish line.** Chromium won't launch here, so once `pnpm check` was
-   green I pushed, deployed, and manually tested the live Pages URL
+   the finish line.** The agent sandbox has no working browser to drive, so
+   once `pnpm check` was green I pushed, deployed, and manually tested the
+   live Pages URL
    --- which is how I found the visible ship couldn't actually be grabbed.
    `.xray-layers` sat over the real `<input type="range">` with no
    `pointer-events: none`, swallowing every pointer event, and the
@@ -73,7 +74,6 @@ EEZ applies but international law still does.
 ## Final verification
 
 `pnpm check` is green: typecheck, build, oxlint, stylelint, 62 vitest tests
-across 5 files (`spec/invariants.test.ts`, `spec/ocean-state.test.ts`,
-`spec/ocean-app.test.ts`, `spec/ocean-journey.test.ts`). `pnpm check:evidence`
-passes. Ship dragging, boundary crossings, and the sticky scene were manually
-re-verified on the deployed GitHub Pages URL, per moment 4 above.
+across 5 files --- 4 in `spec/` plus `scripts/check-evidence.test.ts`.
+`pnpm check:evidence` passes. Ship dragging and boundary crossings were
+manually re-verified on the deployed Pages URL, per moment 4.
