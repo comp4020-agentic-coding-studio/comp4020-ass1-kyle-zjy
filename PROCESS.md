@@ -1,85 +1,76 @@
 # Process overview
 
-<!-- TEMPLATE: this file is a shape to fill in, not a form. Replace everything
-     in it with your own overview, and delete this comment — `pnpm
-     check:evidence` will remind you if it's still here. -->
-
-A reading-guide to how the work came together --- a map to your process, not an
-essay about it. Markers read this file and follow its citations; they don't
-trawl the repo for evidence you didn't point at, so if a moment mattered, cite
-it.
-
-This file is the shape; the course site's
-[assessment page](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/#what-you-submit)
-is the requirement, and its
-[word counts](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/#word-counts)
-cover every deliverable.
-
 ## What I built
 
-One paragraph: the thing, and the idea behind it.
+"Who Owns the Ocean?" is a single page with one mechanic: a native range
+input drags a ship away from the Australian coast, and the legal status of
+the water changes as it crosses invisible boundaries at 12, 24 and 200
+nautical miles --- territorial sea, contiguous zone, exclusive economic zone,
+high seas --- ending on the point the whole thing is built around: past 200 NM
+no state's EEZ applies, but international law still does.
 
 ## The moments that mattered
 
-Three or four for an assignment; fewer is fine for a weekly prototype. Keep the
-list short so each moment has room to do all four jobs:
+1. **The state had to survive a resize, so it couldn't be built from pixels.**
+   The brief requires the interaction to keep working if the viewport resizes
+   mid-drag. The obvious build --- track the ship as a pixel offset inside the
+   ocean scene, derive the zone from where it sits --- breaks the moment the
+   scene's width changes, because the pixel position and the "real" distance
+   fall out of sync. Instead the range input's value *is* the distance in
+   nautical miles, `getZoneId` in `ocean-state.ts` is a pure function of that
+   number, and the ship/boundary markers are positioned from the same
+   `value / max` fraction the browser already uses for the input --- nothing
+   in the whole page derives the zone from geometry. `spec/ocean-app.test.ts`'s
+   resize test (dispatch a `resize` event mid-interaction, assert the zone is
+   unchanged) is what verifies this holds, and it's why the rule is now in
+   [`CLAUDE.md`](CLAUDE.md#this-project-who-owns-the-ocean) rather than left
+   as something I'd have to remember to re-check by hand:
+   [`49772f0`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-kyle-zjy/commit/49772f0).
 
-1. **what happened** --- the problem, or the thing the agent got wrong
-2. **what you did instead of the obvious thing** --- the call you made, and why
-   it beat the obvious one
-3. **how you knew it was right** --- the check you ran, the viewport you looked
-   at, what you read before accepting the diff
-4. **the citation** --- a commit or commit range, a `CLAUDE.md` change, a check
-   that went from red to green, a prompt paired with the commit it produced
+2. **Opacity-based de-emphasis silently risked failing contrast, and I had no
+   automated way to check it.** The page recolours per legal zone --- the
+   background runs from a pale near-white at the coast to near-black on the
+   high seas --- and I'd first written secondary text (captions, the
+   disclaimer, zone body copy) with `opacity` rather than a solid colour. That
+   looks fine on whichever zone you happen to be looking at, but opacity
+   blends the ink toward *whatever* background is behind it, and the sandbox
+   here has no Lighthouse/axe-core/browser available to catch a bad ratio on a
+   zone I wasn't looking at. Rather than guess, I worked the WCAG relative
+   luminance formula by hand for the ink/background pairs across all four
+   zones, picked an explicit `--ink-muted` colour per zone that clears 4.5:1
+   against its own background, and replaced every `opacity` de-emphasis rule
+   with `color: var(--ink-muted)`. That this was a real, recurring risk (not a
+   one-off) is why it went into `CLAUDE.md` as a standing rule instead of just
+   a fix: [`49772f0`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-kyle-zjy/commit/49772f0),
+   rule added in [`a5b8cbb`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-kyle-zjy/commit/a5b8cbb).
 
-Jobs 2 and 3 are the ones the repo can't tell a reader on its own, so they're
-where the marks are. The strongest moments are the ones where a correction
-landed in the **harness** rather than in another prompt --- a rule added to
-`CLAUDE.md`, a check wired up, an attempt thrown away: re-prompting until it
-passes is the routine case, and changing what the agent works against is the
-skilled one.
+3. **Stylelint caught two conventions I'd otherwise have shipped wrong.**
+   `stylelint-config-standard` rejected the BEM-style double-dash class names
+   I'd used for the overlap diagram (`overlap-row--eez`) as not kebab-case, and
+   rejected `@media (max-width: 600px)` in favour of the range-notation form
+   `(width <= 600px)`. Both are exactly the kind of thing that "looks right"
+   and works locally, which is the point of running `pnpm check` before
+   pushing rather than trusting the diff by eye --- the class rename and media
+   query fix both landed in the same commit as the rest of the build once
+   `pnpm check` came back clean: [`49772f0`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-kyle-zjy/commit/49772f0).
 
-Cite each moment as a link whose text is the commit hash or range and whose
-target is this repo's commit or compare URL, so a reader clicks straight to the
-evidence:
-
-- one commit: [`a1b2c3d`](https://github.com/YOUR-ORG/YOUR-REPO/commit/a1b2c3d)
-- a range:
-  [`a1b2c3d...e4f5a6b`](https://github.com/YOUR-ORG/YOUR-REPO/compare/a1b2c3d...e4f5a6b)
-
-To pair a prompt with the commit it produced, quote the prompt (curated, not a
-full transcript) next to the citation:
-
-> the prompt, verbatim
-
-Screenshots are welcome where one carries the verification better than a
-sentence does. Commit the file to this repo and link it with a **relative**
-path, which is what makes it render on GitHub: `![alt text](docs/before.png)`.
-Images don't count towards the word count and don't replace the citation.
-
-### A worked moment, for shape
-
-Delete this section along with the rest of the boilerplate --- it's here to show
-the four jobs in one paragraph, not to be imitated in content.
-
-> The date formatter kept coming back with `toLocaleDateString()` and no locale
-> argument, so the same build rendered differently on my machine and in CI. I'd
-> already re-prompted it twice, which fixed the line but not the habit, so the
-> third time I put the rule in `CLAUDE.md` instead
-> ([`3f9ac21`](https://github.com/YOUR-ORG/YOUR-REPO/commit/3f9ac21)) and added
-> a spec test that fails on a bare `toLocaleDateString`. That's what told me it
-> had actually taken: the test went red against the old code and green against
-> the new, and the next two features it wrote passed it without prompting
-> ([`3f9ac21...b7e0d14`](https://github.com/YOUR-ORG/YOUR-REPO/compare/3f9ac21...b7e0d14)).
+4. **I could not get a headless browser running in this sandbox, and said so
+   instead of claiming a visual pass.** Playwright's chromium fails to launch
+   here (`libnspr4.so` missing, no passwordless sudo to install it), so I
+   could not screenshot the deployed page at 1920x1080 or 390x844, or watch
+   the ship actually drag in a real browser. I did the responsive review at
+   the code level instead --- fluid `clamp()` typography, a `width <= 600px`
+   breakpoint that switches the ocean scene's aspect ratio and grows the
+   thumb to a touch-safe size, `overflow-x: hidden` as a backstop --- but that
+   is a code-level check, not a rendered one, and `CLAUDE.md`'s own guidance
+   ("if you can't test the UI, say so explicitly rather than claiming
+   success") is why this is written down here rather than left implicit.
 
 ## Before you ship
 
-`pnpm check:evidence` verifies your citations resolve to real commits, that the
-current reflection entry is in `reflections/`, and that your `CLAUDE.md` is
-there --- before a marker ever opens the file. It checks that your map is
-traceable, not that it is good: the marker judges whether your small,
-deliberately chosen set of moments shows real judgement and reflection. A green
-check is not a substitute for that curation.
-
-Images are deliberately not checked, because whether one renders is visible the
-moment you look. Open this file on GitHub and look at it before you ship.
+`pnpm check` is green (typecheck, build, oxlint, stylelint, 37 vitest tests
+across `spec/ocean-state.test.ts`, `spec/ocean-app.test.ts`, and the shipped
+`spec/invariants.test.ts`) as of
+[`49772f0`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-kyle-zjy/commit/49772f0).
+Live-browser verification at both required viewports is still outstanding ---
+see moment 4 above.
